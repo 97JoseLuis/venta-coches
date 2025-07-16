@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './AdminPanel.css'; // Asegúrate de crear este archivo para los estilos
 
 /**
  * Panel de administración para usuarios con rol admin

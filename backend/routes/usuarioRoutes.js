@@ -2,13 +2,17 @@ const express = require('express');
 const router = express.Router();
 const {
   registrarUsuario,
-  loginUsuario // Agregamos el controlador de login
+  loginUsuario,
+  obtenerUsuarios
 } = require('../controllers/usuarioController');
 
-// Ruta para registrar nuevo usuario
-router.post('/registro', registrarUsuario);
+const verificarToken = require('../middleware/verificarToken');
+const verificarAdmin = require('../middleware/verificarAdmin');
 
-// Ruta para iniciar sesión
-router.post('/login', loginUsuario); // Esta línea es clave
+router.post('/registro', registrarUsuario);
+router.post('/login', loginUsuario);
+
+// Ruta protegida solo para ADMIN
+router.get('/', verificarToken, verificarAdmin, obtenerUsuarios);
 
 module.exports = router;

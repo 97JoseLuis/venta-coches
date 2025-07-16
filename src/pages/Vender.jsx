@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Vender.css';
 
 /**
  * Página para que los usuarios publiquen un coche en venta
@@ -9,7 +8,7 @@ const Vender = () => {
   const [form, setForm] = useState({
     marca: '',
     modelo: '',
-    año: '',
+    anio: '',
     precio: '',
     descripcion: '',
     imagen: null

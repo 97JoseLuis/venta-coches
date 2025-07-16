@@ -8,6 +8,7 @@ import RutaPrivada from '../components/RutaPrivada';
 import Vender from '../pages/Vender';
 import RutaAdmin from '../components/RutaAdmin';
 import AdminPanel from '../pages/AdminPanel';
+import EditarCoche from '../pages/EditarCoche';
 
 
 const AppRouter = () => {
@@ -31,6 +32,7 @@ const AppRouter = () => {
             <Vender />
           </RutaPrivada>
         } />
+        <Route path="/editar/:id" element={<EditarCoche />} />
       </Routes>
     </Router>
   );

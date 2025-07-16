@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Hook para redirigir
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import './Login.css';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Componente Login
- * Permite a los usuarios autenticarse enviando sus credenciales al backend
+ * Permite a los usuarios iniciar sesión y gestiona la autenticación
  */
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,35 +13,32 @@ const Login = () => {
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
 
-  const navigate = useNavigate(); // Hook para navegación programada
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  // Maneja el envío del formulario de login
+  /**
+   * Maneja el envío del formulario de login
+   */
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      // Petición al backend para validar credenciales
       const response = await axios.post('http://localhost:5000/api/usuarios/login', {
         email,
         password
       });
 
-      // Guardar token y usuario en localStorage
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
-
+      // Guardar token y usuario en Context y localStorage
+      login(response.data.usuario, response.data.token);
       setMensaje('Login exitoso');
       setError('');
 
-      // Redirigir según el rol del usuario
-      const { rol } = response.data.usuario;
-      setTimeout(() => {
-        if (rol === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/');
-        }
-      }, 1000);
+      // Redirigir según el rol
+      if (response.data.usuario.rol === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.mensaje || 'Error al iniciar sesión');
@@ -53,11 +50,9 @@ const Login = () => {
     <div className="login-container">
       <h2>Iniciar sesión</h2>
 
-      {/* Mensaje de éxito o error */}
       {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* Formulario de login */}
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -66,6 +61,7 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Contraseña"
@@ -73,6 +69,7 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
         <button type="submit">Entrar</button>
       </form>
     </div>

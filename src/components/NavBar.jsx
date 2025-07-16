@@ -1,39 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import './NavBar.css';
 
 const NavBar = () => {
-  const [usuario, setUsuario] = useState(null);
+  const { usuario, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Función para obtener el usuario desde localStorage
-  const cargarUsuario = () => {
-    const datosUsuario = localStorage.getItem('usuario');
-    if (datosUsuario) {
-      setUsuario(JSON.parse(datosUsuario));
-    } else {
-      setUsuario(null);
-    }
-  };
-
-  // Cargar al montar y cuando cambia localStorage
-  useEffect(() => {
-    cargarUsuario();
-
-    // Escuchar cambios de sesión desde otras pestañas (opcional)
-    const handleStorageChange = () => cargarUsuario();
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  // Cerrar sesión
   const cerrarSesion = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
-    setUsuario(null);
+    logout();
     navigate('/');
   };
 
