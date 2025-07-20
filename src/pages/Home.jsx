@@ -44,13 +44,13 @@ const Home = () => {
 
   return (
     <div className="autoclick-home">
-      {/* 🟠 Sección con fondo de imagen */}
+      {/* Sección con fondo de imagen */}
       <div className="hero-banner">
         <h1>Bienvenido a AutoClickCar</h1>
         <p>Tu plataforma para comprar y vender coches de segunda mano</p>
       </div>
 
-      {/* 🔵 Sección del video + buscador (se mantiene igual) */}
+      {/* Sección del video + buscador (se mantiene igual) */}
       <div className="hero-layout">
         <div className="video-hero">
           <video autoPlay muted loop playsInline>
@@ -99,14 +99,14 @@ const Home = () => {
         </div>
       </div>
 
-      {/* 🔽 Listado de coches */}
+      {/*Listado de coches */}
       <div className="coches-listado">
         <h2>Coches disponibles</h2>
         <div className="coches-grid">
           {coches.map((coche) => (
             <div key={coche._id} className="coche-card">
               <img
-                src={`http://localhost:5000${coche.imagen}`}
+                src={`https://venta-coches-backend.onrender.com/${coche.imagen}`}
                 alt={`${coche.marca} ${coche.modelo}`}
               />
               <h3>{coche.marca} {coche.modelo}</h3>
