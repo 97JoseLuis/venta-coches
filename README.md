@@ -1,112 +1,98 @@
 # 🚗 AutoClickCar - Plataforma de Compra/Venta de Coches de Segunda Mano
 
-Bienvenido a **AutoClickCar**, una aplicación web donde los usuarios pueden registrar, publicar, editar y eliminar anuncios de coches usados. El proyecto cuenta con autenticación de usuarios, gestión de roles (usuario/admin), subida de imágenes, filtros de búsqueda y un panel de administración.
-
----
+Bienvenido a **AutoClickCar**, una aplicación web donde los usuarios pueden publicar, editar y eliminar anuncios de coches usados. Incluye autenticación, subida de imágenes, filtros dinámicos, contacto con el anunciante y panel de administrador.
 
 ## 📁 Estructura del Proyecto
 
 venta-coches/
 │
-├── backend/ # Servidor Express con MongoDB
+├── backend/ # Backend en Express + MongoDB
 │ ├── controllers/
 │ ├── middleware/
 │ ├── models/
 │ ├── routes/
 │ ├── uploads/ # Imágenes de coches
-│ ├── .env # Variables de entorno del servidor
+│ ├── .env # Variables de entorno del backend
 │ └── server.js
 │
-├── frontend/ # Interfaz en React + Vite
-│ ├── public/ # Archivos estáticos
-│ ├── src/
-│ │ ├── assets/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ ├── services/
-│ │ ├── styles/
-│ │ └── main.jsx
-│ ├── .env # Variables del cliente
-│ └── vite.config.js
+├── public/ # Archivos estáticos (video, imágenes base)
+├── src/ # Frontend en React
+│ ├── assets/
+│ ├── components/
+│ ├── pages/
+│ ├── services/
+│ ├── styles/
+│ ├── AppRouter.jsx
+│ └── main.jsx
 │
-└── README.md
-
----
+├── .env # Variables del frontend (VITE_)
+├── index.html
+├── package.json
+└── vite.config.js
 
 ## ⚙️ Tecnologías Utilizadas
 
 - **Frontend**: React + Vite
 - **Backend**: Node.js + Express
 - **Base de Datos**: MongoDB Atlas
-- **Autenticación**: JSON Web Tokens (JWT)
-- **Subida de imágenes**: Multer
+- **Autenticación**: JWT
+- **Subida de Imágenes**: Multer
 - **Despliegue**:
   - Cliente: Vercel
   - Servidor: Render
 
----
-
 ## 🚀 Funcionalidades
 
-### 🧑 Usuario
-- Registro / Login con JWT
-- Crear, editar y eliminar sus propios anuncios
-- Subida de imágenes para el coche
-- Ver detalles del anuncio
-- Contactar con el anunciante (correo y teléfono)
-
-### 🔍 Buscador dinámico
-- Filtrar por marca y modelo
-- Visualización atractiva de cada coche
-- Vídeo de fondo para dar dinamismo
-
-### 🔐 Admin
-- Panel de administración para gestionar usuarios y coches
+✅ Registro / Login  
+✅ Publicar, editar y eliminar coches  
+✅ Subida de imágenes  
+✅ Filtro por marca y modelo  
+✅ Panel de administrador  
+✅ Contactar con el anunciante (correo y teléfono)  
+✅ Footer y política de cookies  
+✅ Autenticación y control de permisos
 
 ---
 
-## 📝 Variables de Entorno
+## 🧪 Instalación local
 
-### backend/.env
-
-PORT=5000
-MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/venta_coches
-JWT_SECRET=miclaveultrasecreta
-
-### frontend/.env
-
-VITE_API_URL_COCHES=http://localhost:5000/api/coches
-VITE_API_URL_USUARIOS=http://localhost:5000/api/usuarios
-
----
-
-## 🧪 Instalación y ejecución local
-
-```bash
-# Clona el repositorio
+# Clonar el repositorio
 git clone https://github.com/97JoseLuis/venta-coches.git
 cd venta-coches
 
-# Instalar backend
+# Configurar variables de entorno en backend/.env y .env del frontend
+
+# Instalar dependencias del backend
 cd backend
 npm install
 npm run dev
 
-# Instalar frontend
-cd ../frontend
+# Instalar dependencias del frontend (raíz)
+cd ..
 npm install
 npm run dev
+
+🔐 Variables de entorno
+backend/.env
+
+PORT=5000
+MONGO_URI=mongodb+srv://<usuario>:<password>@cluster.mongodb.net/venta_coches
+JWT_SECRET=miclaveultrasecreta
+
+.env (frontend, en raíz del proyecto)
+
+VITE_API_URL_COCHES=https://tubackend.render.com/api/coches
+VITE_API_URL_USUARIOS=https://tubackend.render.com/api/usuarios
 🌍 Despliegue
-Frontend: desplegado con Vercel
+Frontend: Vercel
 
-Backend: desplegado en Render
+Backend: Render
 
-Asegúrate de configurar variables de entorno en ambos entornos antes de desplegar
+Recuerda configurar las variables de entorno también en ambas plataformas para producción.
 
-📜 Licencia
-Este proyecto se distribuye bajo la licencia MIT.
+📄 Licencia
+MIT License.
 
 ✨ Autor
-Desarrollado por José Luis Quintero
-
-Proyecto para portafolio personal / práctica de desarrollo full-stack
+Proyecto creado por José Luis Quintero.
+Desarrollado con ❤️ como parte de práctica Full-Stack.
