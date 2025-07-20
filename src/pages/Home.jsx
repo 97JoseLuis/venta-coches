@@ -54,7 +54,7 @@ const Home = () => {
       <div className="hero-layout">
         <div className="video-hero">
           <video autoPlay muted loop playsInline>
-            <source src="/public/entrega-llaves.mp4" type="video/mp4" />
+            <source src="/entrega-llaves.mp4" type="video/mp4" />
             Tu navegador no soporta video HTML5.
           </video>
         </div>
@@ -106,7 +106,7 @@ const Home = () => {
           {coches.map((coche) => (
             <div key={coche._id} className="coche-card">
               <img
-                src={`https://venta-coches-backend.onrender.com/${coche.imagen}`}
+                src={`${import.meta.env.VITE_BACKEND_URL}${coche.imagen}`}
                 alt={`${coche.marca} ${coche.modelo}`}
               />
               <h3>{coche.marca} {coche.modelo}</h3>
