@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
+const path = require('path');
 
 // Cargar variables de entorno según entorno actual
 const env = process.env.NODE_ENV || 'development';
