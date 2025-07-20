@@ -9,10 +9,11 @@ const {
 const verificarToken = require('../middleware/verificarToken');
 const verificarAdmin = require('../middleware/verificarAdmin');
 
-router.post('/registro', registrarUsuario);
-router.post('/login', loginUsuario);
+const { validarRegistro, validarLogin } = require('../middleware/validaciones');
+const manejarErroresDeValidacion = require('../middleware/manejoValidaciones');
 
-// Ruta protegida solo para ADMIN
+router.post('/registro', validarRegistro, manejarErroresDeValidacion, registrarUsuario);
+router.post('/login', validarLogin, manejarErroresDeValidacion, loginUsuario);
 router.get('/', verificarToken, verificarAdmin, obtenerUsuarios);
 
 module.exports = router;

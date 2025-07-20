@@ -9,6 +9,7 @@ export default function App() {
       <Route path="/" element={<Home />} />
       {/* Ruta fallback: redirige a Home */}
       <Route path="*" element={<Navigate to="/" replace />} />
+
     </Routes>
   );
 }

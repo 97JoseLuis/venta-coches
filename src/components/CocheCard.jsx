@@ -1,25 +1,30 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const CocheCard = ({ coche }) => {
+const CocheCard = ({ coche, onEliminar }) => {
+  const navigate = useNavigate();
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+  const esPropietario = usuario?.id === coche.userId?._id;
+
   return (
-    <div style={{
-      border: '1px solid #ccc',
-      borderRadius: '8px',
-      padding: '1rem',
-      width: '250px',
-      boxShadow: '0 0 10px rgba(0,0,0,0.1)'
-    }}>
-      <img
-        src={coche.imagen}
-        alt={`${coche.marca} ${coche.modelo}`}
-        style={{ width: '100%', borderRadius: '4px' }}
-      />
+    <div className="card">
+      <img src={coche.imagen} alt={coche.modelo} />
       <h3>{coche.marca} {coche.modelo}</h3>
-      <p>Año: {coche.anio}</p>
-      <p>Precio: {coche.precio}€</p>
-      {/* Botón que lleva a la vista de detalles */}
-      <Link to={`/detalles/${coche.id}`}>Ver detalles</Link>
+      <p>{coche.descripcion}</p>
+      <p><strong>Año:</strong> {coche.anio}</p>
+      <p><strong>Precio:</strong> {coche.precio} €</p>
+
+      {/* Mostrar quién lo publicó */}
+      <p><strong>Publicado por:</strong> {coche.userId?.nombre || coche.userId?.email}</p>
+
+      {/* Botones solo para el propietario */}
+      {esPropietario && (
+        <div>
+          <button onClick={() => navigate(`/editar/${coche._id}`)}>Editar</button>
+          <button onClick={() => onEliminar(coche._id)}>Eliminar</button>
+        </div>
+      )}
     </div>
   );
 };

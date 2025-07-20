@@ -1,59 +1,37 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
+import { loginUsuario } from '../services/usuarioService';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
-/**
- * Componente Login
- * Permite a los usuarios iniciar sesión y gestiona la autenticación
- */
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
-
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
-  /**
-   * Maneja el envío del formulario de login
-   */
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/usuarios/login', {
-        email,
-        password
-      });
+      const response = await loginUsuario({ email, password });
 
-      // Guardar token y usuario en Context y localStorage
-      login(response.data.usuario, response.data.token);
-      setMensaje('Login exitoso');
-      setError('');
+      // Guardamos usuario y token en contexto
+      login(response.usuario, response.token);
 
-      // Redirigir según el rol
-      if (response.data.usuario.rol === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+      // Redirigimos al home tras login
+      navigate('/');
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.mensaje || 'Error al iniciar sesión');
-      setMensaje('');
+      setError('Correo o contraseña incorrectos');
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>Iniciar sesión</h2>
-
-      {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      <form onSubmit={handleLogin}>
+    <div className="register-container">
+      <h2>Iniciar Sesión</h2>
+      {error && <p className="error">{error}</p>}
+      <form onSubmit={handleSubmit}>
         <input
           type="email"
           placeholder="Correo electrónico"
@@ -61,7 +39,6 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-
         <input
           type="password"
           placeholder="Contraseña"
@@ -69,7 +46,6 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
         <button type="submit">Entrar</button>
       </form>
     </div>

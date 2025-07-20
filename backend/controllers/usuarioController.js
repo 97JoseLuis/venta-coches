@@ -2,88 +2,134 @@ const Usuario = require('../models/usuario');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Controlador para registrar usuario
-exports.registrarUsuario = async (req, res) => {
-  try {
-    const { nombre, email, password } = req.body;
+/**
 
-    // Validaciones simples
-    if (!nombre || !email || !password) {
-      return res.status(400).json({ mensaje: 'Todos los campos son obligatorios.' });
-    }
+Controlador para registrar un nuevo usuario
+*/
+const registrarUsuario = async (req, res) => {
+try {
+const { nombre, email, password, rol } = req.body;
 
-    // Comprobar si el usuario ya existe
-    const usuarioExistente = await Usuario.findOne({ email });
-    if (usuarioExistente) {
-      return res.status(409).json({ mensaje: 'Este correo ya está registrado.' });
-    }
+// Validaciones básicas
+if (!nombre || !email || !password) {
+return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
+}
 
-    // Encriptar la contraseña
-    const salt = await bcrypt.genSalt(10);
-    const passwordEncriptada = await bcrypt.hash(password, salt);
+const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!emailValido.test(email)) {
+return res.status(400).json({ mensaje: 'Formato de email inválido' });
+}
 
-    // Crear nuevo usuario con contraseña encriptada
-    const nuevoUsuario = new Usuario({
-      nombre,
-      email,
-      password: passwordEncriptada
-    });
+if (password.length < 6) {
+return res.status(400).json({ mensaje: 'La contraseña debe tener al menos 6 caracteres' });
+}
 
-    await nuevoUsuario.save();
+// Verificar si el usuario ya existe
+const usuarioExistente = await Usuario.findOne({ email });
+if (usuarioExistente) {
+return res.status(409).json({ mensaje: 'Ya existe un usuario con ese email' });
+}
 
-    res.status(201).json({ mensaje: 'Usuario registrado con éxito' });
-  } catch (error) {
-    console.error('Error en el registro:', error);
-    res.status(500).json({ mensaje: 'Error al registrar el usuario' });
-  }
+// Hashear la contraseña
+const salt = await bcrypt.genSalt(10);
+const passwordHasheada = await bcrypt.hash(password, salt);
+
+// Crear nuevo usuario
+const nuevoUsuario = new Usuario({
+nombre,
+email,
+password: passwordHasheada,
+rol: rol || 'usuario' // por defecto "usuario"
+});
+
+const usuarioGuardado = await nuevoUsuario.save();
+
+// Crear token
+const token = jwt.sign(
+{ id: usuarioGuardado._id, nombre: usuarioGuardado.nombre, rol: usuarioGuardado.rol },
+process.env.JWT_SECRET,
+{ expiresIn: '3h' }
+);
+
+res.status(201).json({
+mensaje: 'Usuario registrado correctamente',
+token,
+usuario: {
+id: usuarioGuardado._id,
+nombre: usuarioGuardado.nombre,
+email: usuarioGuardado.email,
+rol: usuarioGuardado.rol
+}
+});
+} catch (error) {
+console.error(error);
+res.status(500).json({ mensaje: 'Error en el servidor al registrar usuario' });
+}
 };
 
-// Controlador: Iniciar sesión
-exports.loginUsuario = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+/**
 
-    // Verificar que el usuario existe
-    const usuario = await Usuario.findOne({ email });
-    if (!usuario) {
-      return res.status(400).json({ mensaje: 'Usuario no encontrado' });
-    }
+Controlador para login de usuario
+*/
+const loginUsuario = async (req, res) => {
+  console.log('📩 Body recibido en login:', req.body);
+try {
+const { email, password } = req.body;
 
-    // Comparar contraseñas
-    const esValido = await bcrypt.compare(password, usuario.password);
-    if (!esValido) {
-      return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
-    }
+// Validaciones
+if (!email || !password) {
+return res.status(400).json({ mensaje: 'Email y contraseña son obligatorios' });
+}
 
-    // Generar token JWT
-    const token = jwt.sign(
-      { id: usuario._id, nombre: usuario.nombre },
-      process.env.JWT_SECRET,
-      { expiresIn: '2h' }
-    );
+const usuario = await Usuario.findOne({ email });
+if (!usuario) {
+return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+}
 
-    // Devolver el token y datos del usuario
-    res.json({
-      token,
-      usuario: {
-        id: usuario._id,
-        nombre: usuario.nombre,
-        email: usuario.email,
-        rol: usuario.rol,
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
+const passwordValida = await bcrypt.compare(password, usuario.password);
+if (!passwordValida) {
+return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+}
+
+// Generar token
+const token = jwt.sign(
+{ id: usuario._id, nombre: usuario.nombre, rol: usuario.rol },
+process.env.JWT_SECRET,
+{ expiresIn: '3h' }
+);
+
+res.status(200).json({
+mensaje: 'Login exitoso',
+token,
+usuario: {
+id: usuario._id,
+nombre: usuario.nombre,
+email: usuario.email,
+rol: usuario.rol
+}
+});
+} catch (error) {
+console.error(error);
+res.status(500).json({ mensaje: 'Error en el servidor al iniciar sesión' });
+}
 };
 
-// Obtener todos los usuarios (solo admin)
-exports.obtenerUsuarios = async (req, res) => {
-  try {
-    const usuarios = await Usuario.find().select('-password');
-    res.json(usuarios);
-  } catch (error) {
-    console.error('Error al obtener usuarios:', error);
-    res.status(500).json({ mensaje: 'Error al obtener usuarios' });
-  }
+/**
+
+Obtener todos los usuarios (solo admin)
+*/
+const obtenerUsuarios = async (req, res) => {
+try {
+const usuarios = await Usuario.find().select('-password'); // No mostrar contraseñas
+res.json(usuarios);
+} catch (error) {
+console.error(error);
+res.status(500).json({ mensaje: 'Error al obtener usuarios' });
+}
+};
+
+module.exports = {
+registrarUsuario,
+loginUsuario,
+obtenerUsuarios
 };

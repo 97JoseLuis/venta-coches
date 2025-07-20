@@ -1,11 +1,18 @@
-/* Home Styles */
+/* ------------------ BASE --------------- */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+}
 
+/* ------------------ HOME --------------- */
 .autoclick-home {
   font-family: Arial, sans-serif;
   padding-bottom: 2rem;
 }
 
-/* Cabecera (hero) */
+/* Cabecera */
 .hero-section {
   background-color: #f8f8f8;
   padding: 3rem 1rem;
@@ -23,37 +30,86 @@
   color: #555;
 }
 
-/* Buscador */
-.search-section {
+/* Layout del video y buscador en fila */
+.hero-layout {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin: 2rem auto;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  align-items: center;
 }
 
-.search-card {
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* Video Hero */
+.video-hero {
+  flex: 1;
+  min-width: 300px;
   max-width: 600px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.video-hero video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Buscador */
+.search-card {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
   width: 100%;
 }
 
 .search-card h2 {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  font-size: 1.4rem;
+  color: #333;
+  text-align: center;
 }
 
 .search-card form {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .search-card select,
 .search-card button {
-  flex: 1;
-  padding: 0.5rem;
+  padding: 10px;
   font-size: 1rem;
+  border-radius: 8px;
+}
+
+.search-card select {
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  transition: border-color 0.2s;
+}
+
+.search-card select:focus {
+  border-color: #ff5c00;
+  outline: none;
+}
+
+.search-card button {
+  background-color: #ff5c00;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.search-card button:hover {
+  background-color: #e04e00;
 }
 
 /* Listado de coches */
@@ -69,14 +125,12 @@
   font-size: 1.8rem;
 }
 
-/* Grid de tarjetas */
 .coches-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
 }
 
-/* Tarjeta individual */
 .coche-card {
   background-color: #fff;
   border-radius: 10px;
@@ -121,351 +175,34 @@
   background-color: #e04e00;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .search-card form {
-    flex-direction: column;
-  }
-}
-
-.coches-grid-vertical {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.coche-tarjeta {
-  display: flex;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  overflow: hidden;
-  transition: transform 0.2s;
-}
-
-.coche-tarjeta:hover {
-  transform: scale(1.01);
-}
-
-.coche-img-wrapper {
-  width: 35%;
-  max-width: 240px;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.coche-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.coche-detalles {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
-}
-
-.coche-detalles h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.precio {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #c70039;
-  margin: 0.3rem 0;
-}
-
-.info-secundaria {
-  font-size: 0.95rem;
-  color: #666;
-  margin-bottom: 1rem;
-}
-
-.ver-detalles-btn {
-  align-self: flex-start;
-  background-color: #ff5c00;
-  color: #fff;
-  padding: 0.4rem 0.8rem;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.ver-detalles-btn:hover {
-  background-color: #e04d00;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .coche-tarjeta {
-    flex-direction: column;
-  }
-
-  .coche-img-wrapper {
-    width: 100%;
-    max-height: 200px;
-  }
-
-  .coche-detalles {
-    padding: 0.8rem;
-  }
-}
-
-/* Login Styles */
-
-.autoclick-home {
-  font-family: Arial, sans-serif;
-  padding-bottom: 2rem;
-}
-
-/* Cabecera (hero) */
-.hero-section {
-  background-color: #f8f8f8;
-  padding: 3rem 1rem;
-  text-align: center;
-}
-
-.hero-section h1 {
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.hero-section p {
-  font-size: 1.2rem;
-  color: #555;
-}
-
-/* Buscador */
-.search-section {
-  display: flex;
-  justify-content: center;
-  margin: 2rem auto;
-}
-
-.search-card {
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  max-width: 600px;
-  width: 100%;
-}
-
-.search-card h2 {
-  margin-bottom: 1rem;
-}
-
-.search-card form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.search-card select,
-.search-card button {
-  flex: 1;
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-
-/* Listado de coches */
-.coches-listado {
-  padding: 0 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.coches-listado h2 {
-  margin: 2rem 0 1rem;
-  text-align: center;
-  font-size: 1.8rem;
-}
-
-/* Grid de tarjetas */
-.coches-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-}
-
-/* Tarjeta individual */
-.coche-card {
-  background-color: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-
-.coche-card:hover {
-  transform: scale(1.02);
-}
-
-.coche-card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
-
-.coche-card h3 {
-  margin: 0.5rem 0;
-  font-size: 1.2rem;
-}
-
-.coche-card p {
-  margin: 0.5rem;
-  color: #444;
-}
-
-.detalles-btn {
-  display: inline-block;
-  margin: 0.5rem auto 1rem;
-  background-color: #ff5c00;
-  color: white;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.detalles-btn:hover {
-  background-color: #e04e00;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .search-card form {
-    flex-direction: column;
-  }
-}
-
-.coches-grid-vertical {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.coche-tarjeta {
-  display: flex;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  overflow: hidden;
-  transition: transform 0.2s;
-}
-
-.coche-tarjeta:hover {
-  transform: scale(1.01);
-}
-
-.coche-img-wrapper {
-  width: 35%;
-  max-width: 240px;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.coche-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.coche-detalles {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
-}
-
-.coche-detalles h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.precio {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #c70039;
-  margin: 0.3rem 0;
-}
-
-.info-secundaria {
-  font-size: 0.95rem;
-  color: #666;
-  margin-bottom: 1rem;
-}
-
-.ver-detalles-btn {
-  align-self: flex-start;
-  background-color: #ff5c00;
-  color: #fff;
-  padding: 0.4rem 0.8rem;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.ver-detalles-btn:hover {
-  background-color: #e04d00;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .coche-tarjeta {
-    flex-direction: column;
-  }
-
-  .coche-img-wrapper {
-    width: 100%;
-    max-height: 200px;
-  }
-
-  .coche-detalles {
-    padding: 0.8rem;
-  }
-}
-
-/* Register Styles */
-
-.register-container {
+/* ------------------ LOGIN Y REGISTER --------------- */
+.register-container,
+.login-container {
   max-width: 400px;
   margin: 60px auto;
   padding: 30px;
   border-radius: 12px;
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   border-top: 6px solid #ff5c00;
 }
 
-.register-container h2 {
+.register-container h2,
+.login-container h2 {
   text-align: center;
   margin-bottom: 25px;
   color: #1f2937;
   font-weight: bold;
 }
 
-.register-container form {
+.register-container form,
+.login-container form {
   display: flex;
   flex-direction: column;
 }
 
-.register-container input {
+.register-container input,
+.login-container input {
   margin-bottom: 15px;
   padding: 10px 14px;
   font-size: 15px;
@@ -474,12 +211,14 @@
   transition: border 0.2s;
 }
 
-.register-container input:focus {
+.register-container input:focus,
+.login-container input:focus {
   outline: none;
   border-color: #ff5c00;
 }
 
-.register-container button {
+.register-container button,
+.login-container button {
   padding: 12px;
   font-size: 16px;
   background-color: #ff5c00;
@@ -491,51 +230,40 @@
   transition: background-color 0.2s ease-in-out;
 }
 
-.register-container button:hover {
+.register-container button:hover,
+.login-container button:hover {
   background-color: #e04e00;
 }
 
-.register-container p {
-  margin-top: 10px;
-  text-align: center;
-  font-size: 14px;
-}
-
-/* Vender Styles */
-
-.vender-container {
+/* ------------------ VENDER Y EDITAR --------------- */
+.vender-container,
+.editar-coche-container {
   max-width: 600px;
   margin: 40px auto;
   padding: 24px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', sans-serif;
 }
 
-.vender-container h2 {
+.vender-container h2,
+.editar-coche-container h2 {
   text-align: center;
   margin-bottom: 24px;
   color: #ff5c00;
 }
 
-.vender-container p {
-  text-align: center;
-  font-weight: bold;
-  color: #28a745;
-  margin-bottom: 16px;
-}
-
-.vender-container form {
+.vender-container form,
+.editar-coche-container form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.vender-container input[type="text"],
-.vender-container input[type="number"],
-.vender-container input[type="file"],
-.vender-container textarea {
+.vender-container input,
+.editar-coche-container input,
+.vender-container textarea,
+.editar-coche-container textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -543,12 +271,12 @@
   width: 100%;
 }
 
-.vender-container textarea {
+textarea {
   resize: vertical;
-  min-height: 80px;
 }
 
-.vender-container button {
+.vender-container button,
+.editar-coche-container button {
   background-color: #ff5c00;
   color: white;
   border: none;
@@ -559,88 +287,85 @@
   transition: background-color 0.3s ease;
 }
 
-.vender-container button:hover {
+.vender-container button:hover,
+.editar-coche-container button:hover {
   background-color: #e04d00;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .vender-container {
-    margin: 20px;
-    padding: 16px;
-  }
-
-  .vender-container h2 {
-    font-size: 1.4rem;
-  }
-}
-
-/* Editar Coche Styles */
-
-.editar-coche-container {
-  max-width: 600px;
+/* ------------------ DETALLES --------------- */
+.detalles-container {
+  max-width: 800px;
   margin: 2rem auto;
   padding: 2rem;
   background-color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
-.editar-coche-container h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
+.detalles-container h1 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
   color: #333;
 }
 
-.editar-coche-container form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.detalles-container img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: block;
 }
 
-.editar-coche-container input,
-.editar-coche-container textarea {
-  padding: 10px;
+.detalles-container p {
   font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  outline: none;
+  margin-bottom: 0.5rem;
+  color: #555;
 }
 
-.editar-coche-container textarea {
-  min-height: 100px;
-  resize: vertical;
+.detalles-container strong {
+  color: #222;
 }
 
-.editar-coche-container button {
-  padding: 12px;
-  font-size: 1rem;
-  background-color: #ff5c00;
-  color: white;
+.detalles-acciones {
+  margin-top: 1.5rem;
+}
+
+.detalles-acciones a,
+.detalles-acciones button {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  margin-right: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.detalles-acciones a {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.detalles-acciones a:hover {
+  background-color: #0056b3;
+}
+
+.detalles-acciones button {
+  background-color: #dc3545;
+  color: #fff;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.editar-coche-container button:hover {
-  background-color: #e65100;
+.detalles-acciones button:hover {
+  background-color: #b02a37;
 }
 
-@media (max-width: 600px) {
-  .editar-coche-container {
-    margin: 1rem;
-    padding: 1.5rem;
-  }
-}
-
-/* Admin Styles */
-
+/* ------------------ ADMIN --------------- */
 .admin-panel {
   max-width: 1200px;
   margin: 40px auto;
   padding: 20px;
-  font-family: 'Segoe UI', sans-serif;
   background-color: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
@@ -704,90 +429,144 @@ ul li {
   margin: 20px 0;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  th, td {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-
-  .admin-panel {
-    padding: 15px;
-  }
-
-  ul li {
-    font-size: 0.95rem;
-  }
-}
-
-/* Detalles Styles */
-
-.detalles-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-.detalles-container h1 {
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  color: #333;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.detalles-container img {
-  width: 100%;
-  max-width: 400px;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  display: block;
-}
-
-.detalles-container p {
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.detalles-container strong {
-  color: #222;
-}
-
-.detalles-acciones {
-  margin-top: 1.5rem;
-}
-
-.detalles-acciones a,
-.detalles-acciones button {
-  display: inline-block;
-  padding: 10px 16px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-weight: 500;
-  margin-right: 10px;
-  transition: background-color 0.2s ease;
-}
-
-.detalles-acciones a {
-  background-color: #007bff;
+.hero-banner {
+  background-image: url('/parking.png'); /* Asegúrate de que el archivo esté en public/parking.jpg */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 5rem 1rem;
+  text-align: center;
   color: #fff;
+  position: relative;
 }
 
-.detalles-acciones a:hover {
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* Sombra oscura para mejorar contraste */
+  z-index: 1;
+}
+
+.hero-banner h1,
+.hero-banner p {
+  position: relative;
+  z-index: 2;
+}
+
+/* ------------------ FOOTER ------------------ */
+.footer {
+  background-color: #222;
+  color: #f1f1f1;
+  text-align: center;
+  padding: 1.2rem;
+  font-size: 0.9rem;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer a {
+  color: #ff5c00;
+  text-decoration: none;
+  margin-left: 8px;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrap {
+  flex: 1;
+}
+
+/* ------------------ COOKIE BANNER ------------------ */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #222;
+  color: white;
+  padding: 1rem 2rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.3);
+}
+
+.cookie-banner p {
+  margin: 0;
+}
+
+.cookie-banner a {
+  color: #ffb347;
+  text-decoration: underline;
+}
+
+.cookie-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cookie-banner button {
+  background-color: #ff5c00;
+  border: none;
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.cookie-banner button:hover {
+  background-color: #e04d00;
+}
+
+.configuracion-cookies ul {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0;
+}
+
+.configuracion-cookies li {
+  margin-bottom: 4px;
+}
+
+/* ------------------ CONTACTO   ------------------ */
+
+.contacto-anunciante {
+  margin-top: 2rem;
+  background-color: #f2f2f2;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.contacto-anunciante button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.contacto-anunciante button:hover {
   background-color: #0056b3;
 }
 
-.detalles-acciones button {
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-.detalles-acciones button:hover {
-  background-color: #b02a37;
+.info-contacto p {
+  margin: 0.4rem 0;
+  color: #333;
 }

@@ -1,27 +1,32 @@
-import { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
+// Creamos el contexto de autenticación
 export const AuthContext = createContext();
 
+// Proveedor del contexto
 export const AuthProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
 
+  // Al cargar la app, recuperamos el usuario desde localStorage
   useEffect(() => {
-    const datosGuardados = localStorage.getItem('usuario');
-    if (datosGuardados) {
-      setUsuario(JSON.parse(datosGuardados));
+    const usuarioGuardado = localStorage.getItem('usuario');
+    if (usuarioGuardado) {
+      setUsuario(JSON.parse(usuarioGuardado));
     }
   }, []);
 
-  const login = (usuarioData, token) => {
-    localStorage.setItem('usuario', JSON.stringify(usuarioData));
+  // Función para iniciar sesión
+  const login = (usuario, token) => {
+    setUsuario(usuario);
     localStorage.setItem('token', token);
-    setUsuario(usuarioData);
+    localStorage.setItem('usuario', JSON.stringify(usuario));
   };
 
+  // Función para cerrar sesión
   const logout = () => {
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('token');
     setUsuario(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
   };
 
   return (

@@ -11,15 +11,17 @@ console.log('Conectado a MongoDB');
 
 const usuarios = [
   {
-    nombre: 'Usuario Normal 1',
+    nombre: 'Usuario 1',
     email: 'normal1@autoclick.com',
     password: await bcrypt.hash('clave123', 10),
+    telefono: '123456789',
     rol: 'usuario',
   },
   {
-    nombre: 'Usuario Normal 2',
+    nombre: 'Usuario 2',
     email: 'normal2@autoclick.com',
     password: await bcrypt.hash('clave123', 10),
+    telefono: '987654321',
     rol: 'usuario',
   },
   {
