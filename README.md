@@ -31,10 +31,6 @@ venta-coches/
 │
 └── README.md
 
-yaml
-Copiar
-Editar
-
 ---
 
 ## ⚙️ Tecnologías Utilizadas
@@ -77,18 +73,10 @@ PORT=5000
 MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/venta_coches
 JWT_SECRET=miclaveultrasecreta
 
-shell
-Copiar
-Editar
-
 ### frontend/.env
 
 VITE_API_URL_COCHES=http://localhost:5000/api/coches
 VITE_API_URL_USUARIOS=http://localhost:5000/api/usuarios
-
-yaml
-Copiar
-Editar
 
 ---
 
