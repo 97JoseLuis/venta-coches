@@ -5,6 +5,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 // Obtener todos los coches
 export const getCoches = async () => {
   const response = await fetch(`${API_URL}/coches`);
+  if (!response.ok) 
+    throw new Error('Error al obtener los coches');
   const data = await response.json();
   return data;
 };
@@ -105,6 +107,8 @@ export const actualizarCoche = async (id, datosActualizados, token) => {
 // Obtener marcas y modelos para el filtro
 export const getOpcionesFiltro = async () => {
   const response = await fetch(`${API_URL}/filtros/opciones`);
+  if (!response.ok) 
+    throw new Error('Error al obtener opciones de filtro');
   const data = await response.json();
   return data;
 };
