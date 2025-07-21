@@ -1,5 +1,4 @@
 import axios from 'axios';
-import coche from '../../backend/models/coche';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
