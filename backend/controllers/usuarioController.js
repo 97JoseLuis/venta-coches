@@ -1,135 +1,61 @@
 const Usuario = require('../models/usuario');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-/**
+// REGISTRO de usuario
+const registrarUsuario = async (req, res, next) => {
+  try {
+    const { nombre, email, password, rol, adminKey } = req.body;
 
-Controlador para registrar un nuevo usuario
-*/
-const registrarUsuario = async (req, res) => {
-try {
-const { nombre, email, password, rol } = req.body;
+    // Validar si ya existe
+    const existente = await Usuario.findOne({ email });
+    if (existente) return res.status(409).json({ mensaje: 'El usuario ya existe' });
 
-// Validaciones básicas
-if (!nombre || !email || !password) {
-return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
-}
+    // Determinar rol: solo permitimos "admin" si la clave es correcta
+    let rolFinal = 'usuario';
+    if (rol === 'admin') {
+      if (adminKey !== process.env.ADMIN_KEY) {
+        return res.status(403).json({ mensaje: 'Clave de administrador incorrecta' });
+      }
+      rolFinal = 'admin';
+    }
 
-const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-if (!emailValido.test(email)) {
-return res.status(400).json({ mensaje: 'Formato de email inválido' });
-}
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-if (password.length < 6) {
-return res.status(400).json({ mensaje: 'La contraseña debe tener al menos 6 caracteres' });
-}
+    const nuevoUsuario = new Usuario({
+      nombre,
+      email,
+      password: hashedPassword,
+      rol: rolFinal,
+    });
 
-// Verificar si el usuario ya existe
-const usuarioExistente = await Usuario.findOne({ email });
-if (usuarioExistente) {
-return res.status(409).json({ mensaje: 'Ya existe un usuario con ese email' });
-}
-
-// Hashear la contraseña
-const salt = await bcrypt.genSalt(10);
-const passwordHasheada = await bcrypt.hash(password, salt);
-
-// Crear nuevo usuario
-const nuevoUsuario = new Usuario({
-nombre,
-email,
-password: passwordHasheada,
-rol: rol || 'usuario' // por defecto "usuario"
-});
-
-const usuarioGuardado = await nuevoUsuario.save();
-
-// Crear token
-const token = jwt.sign(
-{ id: usuarioGuardado._id, nombre: usuarioGuardado.nombre, rol: usuarioGuardado.rol },
-process.env.JWT_SECRET,
-{ expiresIn: '3h' }
-);
-
-res.status(201).json({
-mensaje: 'Usuario registrado correctamente',
-token,
-usuario: {
-id: usuarioGuardado._id,
-nombre: usuarioGuardado.nombre,
-email: usuarioGuardado.email,
-rol: usuarioGuardado.rol
-}
-});
-} catch (error) {
-console.error(error);
-res.status(500).json({ mensaje: 'Error en el servidor al registrar usuario' });
-}
+    const guardado = await nuevoUsuario.save();
+    res.status(201).json(guardado);
+  } catch (err) {
+    next(err);
+  }
 };
 
-/**
+// LOGIN
+const loginUsuario = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const usuario = await Usuario.findOne({ email });
+    if (!usuario) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
 
-Controlador para login de usuario
-*/
-const loginUsuario = async (req, res) => {
-  console.log('📩 Body recibido en login:', req.body);
-try {
-const { email, password } = req.body;
+    const match = await bcrypt.compare(password, usuario.password);
+    if (!match) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
 
-// Validaciones
-if (!email || !password) {
-return res.status(400).json({ mensaje: 'Email y contraseña son obligatorios' });
-}
+    const token = jwt.sign(
+      { id: usuario._id, rol: usuario.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: '3h' }
+    );
 
-const usuario = await Usuario.findOne({ email });
-if (!usuario) {
-return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-}
-
-const passwordValida = await bcrypt.compare(password, usuario.password);
-if (!passwordValida) {
-return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-}
-
-// Generar token
-const token = jwt.sign(
-{ id: usuario._id, nombre: usuario.nombre, rol: usuario.rol },
-process.env.JWT_SECRET,
-{ expiresIn: '3h' }
-);
-
-res.status(200).json({
-mensaje: 'Login exitoso',
-token,
-usuario: {
-id: usuario._id,
-nombre: usuario.nombre,
-email: usuario.email,
-rol: usuario.rol
-}
-});
-} catch (error) {
-console.error(error);
-res.status(500).json({ mensaje: 'Error en el servidor al iniciar sesión' });
-}
+    res.json({ token, usuario });
+  } catch (err) {
+    next(err);
+  }
 };
 
-/**
-
-Obtener todos los usuarios (solo admin)
-*/
-const obtenerUsuarios = async (req, res) => {
-try {
-const usuarios = await Usuario.find().select('-password'); // No mostrar contraseñas
-res.json(usuarios);
-} catch (error) {
-console.error(error);
-res.status(500).json({ mensaje: 'Error al obtener usuarios' });
-}
-};
-
-module.exports = {
-registrarUsuario,
-loginUsuario,
-obtenerUsuarios
-};
+module.exports = { registrarUsuario, loginUsuario };

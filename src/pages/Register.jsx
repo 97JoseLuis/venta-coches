@@ -9,6 +9,8 @@ const Register = () => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rol, setRol] = useState('usuario');
+  const [adminKey, setAdminKey] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
 
@@ -24,12 +26,19 @@ const Register = () => {
     }
 
     try {
+      // Registro con rol y clave si aplica
       await axios.post(`${API_URL}/api/usuarios/registro`, {
-        nombre, email, password,
+        nombre,
+        email,
+        password,
+        rol,
+        adminKey,
       });
 
+      // Login automático
       const res = await axios.post(`${API_URL}/api/usuarios/login`, {
-        email, password,
+        email,
+        password,
       });
 
       login(res.data.usuario, res.data.token);
@@ -74,6 +83,21 @@ const Register = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <select value={rol} onChange={(e) => setRol(e.target.value)}>
+          <option value="usuario">Usuario</option>
+          <option value="admin">Administrador</option>
+        </select>
+
+        {rol === 'admin' && (
+          <input
+            type="text"
+            placeholder="Clave secreta de administrador"
+            value={adminKey}
+            onChange={(e) => setAdminKey(e.target.value)}
+          />
+        )}
+
         <button type="submit">Registrarse</button>
       </form>
     </div>
