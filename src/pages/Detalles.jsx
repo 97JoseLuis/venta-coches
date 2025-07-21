@@ -47,7 +47,7 @@ const Detalles = () => {
       {mensaje && <p style={{ color: 'green' }}>{mensaje}</p>}
 
       {coche.imagen && (
-        <img src={`http://localhost:5000${coche.imagen}`} alt={`${coche.marca} ${coche.modelo}`} />
+        <img src={`${import.meta.env.VITE_API_URL}${coche.imagen}`} alt={`${coche.marca} ${coche.modelo}`} />
       )}
 
       <p><strong>Año:</strong> {coche.anio}</p>

@@ -106,7 +106,7 @@ const Home = () => {
           {coches.map((coche) => (
             <div key={coche._id} className="coche-card">
               <img
-                src={`${import.meta.env.VITE_BACKEND_URL}${coche.imagen}`}
+                src={`${import.meta.env.VITE_API_URL}${coche.imagen}`}
                 alt={`${coche.marca} ${coche.modelo}`}
               />
               <h3>{coche.marca} {coche.modelo}</h3>
