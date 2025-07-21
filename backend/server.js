@@ -9,10 +9,7 @@ const env = process.env.NODE_ENV || 'development';
 require('dotenv').config({ path: `.env.${env}` });
 
 // Middlewares
-app.use(cors({
-  origin: ['https://venta-coches.vercel.app'],
-  credentials: true,
-}));
+app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
