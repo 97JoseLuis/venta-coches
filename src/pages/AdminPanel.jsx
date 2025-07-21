@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+// URL del backend definida desde el entorno (.env)
+const API_URL = import.meta.env.VITE_API_URL;
+
 /**
  * Panel de administración para usuarios con rol admin
  * Permite visualizar usuarios y coches registrados
@@ -21,9 +24,10 @@ const AdminPanel = () => {
     }
   }, []);
 
+  // Cargar lista de usuarios si el token es válido
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/usuarios', {
+      const res = await axios.get(`${API_URL}/api/usuarios`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -34,9 +38,10 @@ const AdminPanel = () => {
     }
   };
 
+  // Cargar coches publicados
   const cargarCoches = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/coches');
+      const res = await axios.get(`${API_URL}/api/coches`);
       setCoches(res.data);
     } catch (err) {
       setError('Error al cargar coches');
@@ -47,6 +52,7 @@ const AdminPanel = () => {
     <div className="admin-panel">
       <h2>Panel de Administración</h2>
 
+      {/* Mostrar errores si hay */}
       {error && <p className="error">{error}</p>}
 
       {!error && (
