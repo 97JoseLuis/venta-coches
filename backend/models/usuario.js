@@ -18,7 +18,7 @@ required: true,
 },
 telefono: {
 type: String,
-required: true,
+required: false, // Opcional
 },
 rol: {
 type: String,
