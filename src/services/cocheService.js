@@ -1,4 +1,5 @@
 import axios from 'axios';
+import coche from '../../backend/models/coche';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,7 +12,7 @@ export const getCoches = async () => {
 
 // Obtener coche por ID
 export const getCocheById = async (id) => {
-  const response = await fetch(`${API_URL}/${id}`);
+  const response = await fetch(`${API_URL/coche}/${id}`);
   const data = await response.json();
   return data;
 };
