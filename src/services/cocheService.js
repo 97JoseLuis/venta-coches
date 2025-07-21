@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
-console.log('URL COCHES:', COCHES_API); // Para comprobar que se carga bien
 
 // Obtener todos los coches
 export const getCoches = async () => {
