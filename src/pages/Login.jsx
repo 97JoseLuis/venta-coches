@@ -1,14 +1,15 @@
 import React, { useState, useContext } from 'react';
-import { loginUsuario } from '../services/usuarioService';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { loginUsuario } from '../services/usuarioService';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+
   const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,11 +18,13 @@ const Login = () => {
     try {
       const response = await loginUsuario({ email, password });
 
-      // Guardamos usuario y token en contexto
       login(response.usuario, response.token);
 
-      // Redirigimos al home tras login
-      navigate('/');
+      if (response.usuario.rol === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError('Correo o contraseña incorrectos');
     }
@@ -31,6 +34,7 @@ const Login = () => {
     <div className="register-container">
       <h2>Iniciar Sesión</h2>
       {error && <p className="error">{error}</p>}
+
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -39,6 +43,7 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Contraseña"
@@ -46,6 +51,7 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
         <button type="submit">Entrar</button>
       </form>
     </div>
