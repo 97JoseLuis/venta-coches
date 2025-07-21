@@ -44,13 +44,13 @@ const Home = () => {
 
   return (
     <div className="autoclick-home">
-      {/* Sección con fondo de imagen */}
+      {/* Hero/banner */}
       <div className="hero-banner">
         <h1>Bienvenido a AutoClickCar</h1>
         <p>Tu plataforma para comprar y vender coches de segunda mano</p>
       </div>
 
-      {/* Sección del video + buscador (se mantiene igual) */}
+      {/* Buscador */}
       <div className="hero-layout">
         <div className="video-hero">
           <video autoPlay muted loop playsInline>
@@ -86,29 +86,32 @@ const Home = () => {
               ))}
             </select>
 
-            <button type="submit" disabled={!marcaFiltro && !modeloFiltro}>
-              Buscar
-            </button>
-
+            <button type="submit" disabled={!marcaFiltro && !modeloFiltro}>Buscar</button>
             {(marcaFiltro || modeloFiltro) && (
-              <button type="button" onClick={handleReset}>
-                Ver todos
-              </button>
+              <button type="button" onClick={handleReset}>Ver todos</button>
             )}
           </form>
         </div>
       </div>
 
-      {/*Listado de coches */}
+      {/* Listado de coches */}
       <div className="coches-listado">
         <h2>Coches disponibles</h2>
         <div className="coches-grid">
           {coches.map((coche) => (
             <div key={coche._id} className="coche-card">
-              <img
-                src={`${import.meta.env.VITE_API_URL}${coche.imagen}`}
-                alt={`${coche.marca} ${coche.modelo}`}
-              />
+              <div className="imagen-container">
+                <img
+                  src={`${import.meta.env.VITE_API_URL}${coche.imagen}`}
+                  alt={`${coche.marca} ${coche.modelo}`}
+                />
+                {/* Mostrar cartel si el coche está reservado o vendido */}
+                {coche.estado && coche.estado !== 'disponible' && (
+                  <span className={`estado-etiqueta ${coche.estado}`}>
+                    {coche.estado.toUpperCase()}
+                  </span>
+                )}
+              </div>
               <h3>{coche.marca} {coche.modelo}</h3>
               <p>{coche.anio} • {coche.precio} €</p>
               <Link className="detalles-btn" to={`/detalles/${coche._id}`}>

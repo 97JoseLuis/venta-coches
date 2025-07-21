@@ -134,6 +134,30 @@ router.put(
   }
 );
 
+// PUT /api/coches/:id/estado - Cambiar estado (solo dueño)
+router.put('/:id/estado', verificarToken, async (req, res, next) => {
+  try {
+    const coche = await Coche.findById(req.params.id);
+    if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
+
+    // Solo el dueño puede cambiar el estado
+    if (coche.userId.toString() !== req.usuario.id) {
+      return res.status(403).json({ mensaje: 'No autorizado para modificar este coche' });
+    }
+
+    const { estado } = req.body;
+    if (!['disponible', 'reservado', 'vendido'].includes(estado)) {
+      return res.status(400).json({ mensaje: 'Estado no válido' });
+    }
+
+    coche.estado = estado;
+    const actualizado = await coche.save();
+    res.json(actualizado);
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 // DELETE /api/coches/:id
 router.delete('/:id', verificarToken, async (req, res, next) => {

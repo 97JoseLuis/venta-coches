@@ -1,63 +1,82 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
-// Hook para manejar coches desde API
+// Obtenemos la URL base desde variables de entorno
+const API_URL = import.meta.env.VITE_API_URL;
+
+/**
+ * Hook personalizado para manejar la lógica relacionada con los coches
+ */
 export function useCoches() {
   const [coches, setCoches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Función para cargar coches
+  /**
+   * Función para obtener la lista de coches desde el backend
+   */
   const fetchCoches = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const res = await fetch('http://localhost:5000/api/coches');
-      if (!res.ok) throw new Error('Error al cargar coches');
-      const data = await res.json();
-      setCoches(data);
+      const res = await axios.get(`${API_URL}/api/coches`);
+      setCoches(res.data);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.mensaje || 'Error al cargar coches');
     } finally {
       setLoading(false);
     }
   };
 
-  // Cargar coches al montar el hook
+  /**
+   * Se ejecuta automáticamente al montar el componente
+   */
   useEffect(() => {
     fetchCoches();
   }, []);
 
-  // Borrar un coche por id
+  /**
+   * Elimina un coche por ID y actualiza la lista local
+   * @param {string} id ID del coche a eliminar
+   */
   const borrarCoche = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/coches/${id}`, {
-        method: 'DELETE',
+      await axios.delete(`${API_URL}/api/coches/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
-      if (!res.ok) throw new Error('Error al borrar coche');
-      // Actualizamos la lista quitando el borrado
-      setCoches((prev) => prev.filter(coche => coche._id !== id));
+      setCoches((prev) => prev.filter((coche) => coche._id !== id));
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.mensaje || 'Error al borrar coche');
     }
   };
 
-  // Añadir un coche nuevo
+  /**
+   * Agrega un nuevo coche (requiere objeto FormData)
+   * @param {FormData} nuevoCoche datos del coche a registrar
+   */
   const agregarCoche = async (nuevoCoche) => {
     try {
-      const res = await fetch('http://localhost:5000/api/coches', {
-        method: 'POST',
+      const res = await axios.post(`${API_URL}/api/coches`, nuevoCoche, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(nuevoCoche),
       });
-      if (!res.ok) throw new Error('Error al añadir coche');
-      const cocheCreado = await res.json();
-      setCoches((prev) => [...prev, cocheCreado]);
+      setCoches((prev) => [...prev, res.data]);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.mensaje || 'Error al añadir coche');
     }
   };
 
-  return { coches, loading, error, borrarCoche, agregarCoche };
+  return {
+    coches,
+    loading,
+    error,
+    fetchCoches,   // También puedes usar esta función manualmente
+    borrarCoche,
+    agregarCoche,
+  };
 }
