@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const COCHES_API = import.meta.env.VITE_API_URL_COCHES;
+const API_URL = import.meta.env.VITE_API_URL;
 console.log('URL COCHES:', COCHES_API); // Para comprobar que se carga bien
 
 // Obtener todos los coches
 export const getCoches = async () => {
-  const response = await fetch(COCHES_API);
+  const response = await fetch(`${API_URL}/coches`);
   const data = await response.json();
   return data;
 };
