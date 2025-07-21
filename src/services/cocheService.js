@@ -11,7 +11,7 @@ export const getCoches = async () => {
 
 // Obtener coche por ID
 export const getCocheById = async (id) => {
-  const response = await fetch(`${COCHES_API}/${id}`);
+  const response = await fetch(`${API_URL}/${id}`);
   const data = await response.json();
   return data;
 };
@@ -28,7 +28,7 @@ export const crearCoche = async (nuevoCoche) => {
     }
   }
 
-  const response = await axios.post(COCHES_API, formData, {
+  const response = await axios.post(API_URL, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -54,7 +54,7 @@ export const editarCoche = async (id, datosCoche) => {
     }
   }
 
-  const response = await axios.put(`${COCHES_API}/${id}`, formData, {
+  const response = await axios.put(`${API_URL}/${id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -66,7 +66,7 @@ export const editarCoche = async (id, datosCoche) => {
 
 // Eliminar coche
 export const eliminarCoche = async (id, token) => {
-  const response = await axios.delete(`${COCHES_API}/${id}`, {
+  const response = await axios.delete(`${API_URL}/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -88,7 +88,7 @@ export const actualizarCoche = async (id, datosActualizados, token) => {
       }
     }
 
-    const response = await axios.put(`${COCHES_API}/${id}`, formData, {
+    const response = await axios.put(`${API_URL}/${id}`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
@@ -104,7 +104,7 @@ export const actualizarCoche = async (id, datosActualizados, token) => {
 
 // Obtener marcas y modelos para el filtro
 export const getOpcionesFiltro = async () => {
-  const response = await fetch(`${COCHES_API}/filtros/opciones`);
+  const response = await fetch(`${API_URL}/filtros/opciones`);
   const data = await response.json();
   return data;
 };
