@@ -3,9 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-/**
- * Componente de registro de usuarios
- */
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Register = () => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -25,13 +24,11 @@ const Register = () => {
     }
 
     try {
-      // Registrar usuario
-      await axios.post('http://localhost:5000/api/usuarios/registro', {
+      await axios.post(`${API_URL}/api/usuarios/registro`, {
         nombre, email, password,
       });
 
-      // Iniciar sesión automáticamente
-      const res = await axios.post('http://localhost:5000/api/usuarios/login', {
+      const res = await axios.post(`${API_URL}/api/usuarios/login`, {
         email, password,
       });
 
@@ -39,7 +36,6 @@ const Register = () => {
       setMensaje('Registro exitoso. Redirigiendo...');
       setError('');
 
-      // Redirigir según rol
       setTimeout(() => {
         if (res.data.usuario.rol === 'admin') {
           navigate('/admin');
