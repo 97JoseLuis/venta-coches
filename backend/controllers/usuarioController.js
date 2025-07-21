@@ -7,11 +7,13 @@ const registrarUsuario = async (req, res, next) => {
   try {
     const { nombre, email, password, rol, adminKey } = req.body;
 
-    // Validar si ya existe
+    // Verificar si ya existe
     const existente = await Usuario.findOne({ email });
-    if (existente) return res.status(409).json({ mensaje: 'El usuario ya existe' });
+    if (existente) {
+      return res.status(409).json({ mensaje: 'El usuario ya existe' });
+    }
 
-    // Determinar rol: solo permitimos "admin" si la clave es correcta
+    // Rol por defecto es 'usuario', solo será 'admin' si pasa la validación de clave
     let rolFinal = 'usuario';
     if (rol === 'admin') {
       if (adminKey !== process.env.ADMIN_KEY) {
@@ -20,6 +22,7 @@ const registrarUsuario = async (req, res, next) => {
       rolFinal = 'admin';
     }
 
+    // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const nuevoUsuario = new Usuario({
@@ -40,11 +43,16 @@ const registrarUsuario = async (req, res, next) => {
 const loginUsuario = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
     const usuario = await Usuario.findOne({ email });
-    if (!usuario) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+    if (!usuario) {
+      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+    }
 
     const match = await bcrypt.compare(password, usuario.password);
-    if (!match) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+    if (!match) {
+      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+    }
 
     const token = jwt.sign(
       { id: usuario._id, rol: usuario.rol },
@@ -58,4 +66,18 @@ const loginUsuario = async (req, res, next) => {
   }
 };
 
-module.exports = { registrarUsuario, loginUsuario };
+const obtenerUsuarios = async (req, res, next) => {
+  try {
+    const usuarios = await Usuario.find().select('-password');
+    res.json(usuarios);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Exportamos las funciones
+module.exports = {
+  registrarUsuario,
+  loginUsuario,
+  obtenerUsuarios,
+};
