@@ -8,10 +8,10 @@ const {
 
 const verificarToken = require('../middleware/verificarToken');
 const verificarAdmin = require('../middleware/verificarAdmin');
-
 const { validarRegistro, validarLogin } = require('../middleware/validaciones');
 const manejarErroresDeValidacion = require('../middleware/manejoValidaciones');
 
+// Rutas
 router.post('/registro', validarRegistro, manejarErroresDeValidacion, registrarUsuario);
 router.post('/login', validarLogin, manejarErroresDeValidacion, loginUsuario);
 router.get('/', verificarToken, verificarAdmin, obtenerUsuarios);

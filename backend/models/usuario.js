@@ -25,17 +25,5 @@ const usuarioSchema = new mongoose.Schema({
   timestamps: true, // Crea campos createdAt y updatedAt automáticamente
 });
 
-// Middleware: encripta la contraseña antes de guardar (si fue modificada)
-usuarioSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next(); // Solo encripta si cambió
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt); // Encriptar
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
-
 // Exportamos el modelo
 module.exports = mongoose.model('Usuario', usuarioSchema);
