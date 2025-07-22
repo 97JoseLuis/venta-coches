@@ -14,7 +14,7 @@ const Detalles = () => {
   useEffect(() => {
     const obtenerCoche = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/coches/${id}`);
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/coches/${id}`);
         setCoche(data);
       } catch (error) {
         console.error('Error al obtener coche:', error);
@@ -28,7 +28,7 @@ const Detalles = () => {
     try {
       const token = localStorage.getItem('token');
       const { data } = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/coches/${id}/estado`,
+        `${import.meta.env.VITE_API_URL}/coches/${id}/estado`,
         { estado: nuevoEstado },
         { headers: { Authorization: `Bearer ${token}` } }
       );
