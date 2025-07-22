@@ -535,8 +535,7 @@ ul li {
 
 /* ------------------ HERO BANNER ------------------ */
 .hero-banner {
-  background-image: url('/parking.png'); /* Asegúrate de que el archivo esté en public/parking.png */
-  background-size: cover;
+  background-image: url('/parking.png'); 
   background-position: center;
   background-repeat: no-repeat;
   padding: 5rem 1rem;
