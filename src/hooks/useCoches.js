@@ -75,7 +75,7 @@ export function useCoches() {
     coches,
     loading,
     error,
-    fetchCoches,   // También puedes usar esta función manualmente
+    fetchCoches,
     borrarCoche,
     agregarCoche,
   };

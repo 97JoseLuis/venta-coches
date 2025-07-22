@@ -80,7 +80,7 @@ export const eliminarCoche = async (id, token) => {
 };
 
 // Actualizar coche (con imagen opcional)
-export const actualizarCoche = async (id, datosActualizados, token) => {
+export const actualizarEstadoCoche = async (id, datosActualizados, token) => {
   try {
     const formData = new FormData();
     for (const key in datosActualizados) {
