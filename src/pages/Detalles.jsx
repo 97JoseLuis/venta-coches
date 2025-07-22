@@ -1,86 +1,92 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getCocheById, actualizarEstadoCoche } from '../services/cocheService';
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
 const Detalles = () => {
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
   const [coche, setCoche] = useState(null);
-  const [error, setError] = useState('');
-  const [usuario, setUsuario] = useState(null);
-  const token = localStorage.getItem('token');
+  const [mostrarContacto, setMostrarContacto] = useState(false);
+
+  const esPropietario = user && coche?.usuario?._id === user._id;
 
   useEffect(() => {
-    const cargarCoche = async () => {
+    const obtenerCoche = async () => {
       try {
-        const data = await getCocheById(id);
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/coches/${id}`);
         setCoche(data);
-      } catch (err) {
-        setError('Error al cargar el coche');
+      } catch (error) {
+        console.error('Error al obtener coche:', error);
       }
     };
 
-    const usuarioGuardado = localStorage.getItem('usuario');
-    if (usuarioGuardado) {
-      setUsuario(JSON.parse(usuarioGuardado));
-    }
-
-    cargarCoche();
+    obtenerCoche();
   }, [id]);
-
-  const esDueño = usuario && coche && usuario._id === coche.userId._id;
 
   const cambiarEstado = async (nuevoEstado) => {
     try {
-      const actualizado = await actualizarEstadoCoche(id, nuevoEstado, token);
-      setCoche(actualizado); // actualiza el estado en la vista
-    } catch (err) {
-      console.error('Error al actualizar estado:', err);
+      const token = localStorage.getItem('token');
+      const { data } = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_URL}/coches/${id}/estado`,
+        { estado: nuevoEstado },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setCoche({ ...coche, estado: data.estado });
+    } catch (error) {
+      console.error('Error al cambiar estado:', error);
     }
   };
 
-  if (error) return <p>{error}</p>;
   if (!coche) return <p>Cargando...</p>;
 
   return (
     <div className="detalles-container">
-      <h2>{coche.marca} {coche.modelo}</h2>
-      
-      <div className="detalle-imagen">
-        {/* Imagen del coche */}
-        <img
-          src={import.meta.env.VITE_API_URL + coche.imagen}
-          alt={coche.marca + ' ' + coche.modelo}
-          className={`imagen-coche${coche.estado !== 'disponible' ? ' opaca' : ''}`}
-        />
+      <h1>{coche.marca} {coche.modelo}</h1>
 
-        {/* Cartel de estado sobre la imagen */}
+      <div className="detalle-imagen-container">
+        <img src={coche.imagen} alt={`${coche.marca} ${coche.modelo}`} />
+
         {coche.estado !== 'disponible' && (
-          <div className={`estado-banner ${coche.estado}`}>
-            {coche.estado.toUpperCase()}
+          <div className={`estado-etiqueta ${coche.estado}`}>
+            {coche.estado}
           </div>
         )}
       </div>
 
-      <p><strong>Año:</strong> {coche.anio}</p>
       <p><strong>Precio:</strong> {coche.precio} €</p>
+      <p><strong>Año:</strong> {coche.anio}</p>
       <p><strong>Descripción:</strong> {coche.descripcion}</p>
 
-      {/* Botones para el dueño del anuncio */}
-      {esDueño && (
-        <div className="estado-botones">
-          <p><strong>Cambiar estado:</strong></p>
-          <button onClick={() => cambiarEstado('disponible')}>Disponible</button>
-          <button onClick={() => cambiarEstado('reservado')}>Reservado</button>
-          <button onClick={() => cambiarEstado('vendido')}>Vendido</button>
-        </div>
-      )}
+      <div className="detalles-acciones">
+        {esPropietario && (
+          <>
+            {coche.estado !== 'disponible' && (
+              <button onClick={() => cambiarEstado('disponible')}>Disponible</button>
+            )}
+            {coche.estado !== 'reservado' && (
+              <button onClick={() => cambiarEstado('reservado')}>Reservado</button>
+            )}
+            {coche.estado !== 'vendido' && (
+              <button onClick={() => cambiarEstado('vendido')}>Vendido</button>
+            )}
+            <Link to={`/editar/${coche._id}`}>Editar</Link>
+          </>
+        )}
+      </div>
 
-      {/* Botón de contacto para los demás usuarios */}
-      {!esDueño && (
+      {!esPropietario && (
         <div className="contacto-anunciante">
-          <h3>Contactar con el anunciante</h3>
-          <p><strong>Nombre:</strong> {coche.userId?.nombre}</p>
-          <p><strong>Email:</strong> {coche.userId?.email}</p>
+          <button onClick={() => setMostrarContacto(!mostrarContacto)}>
+            Contactar con el anunciante
+          </button>
+
+          {mostrarContacto && (
+            <div className="info-contacto">
+              <p><strong>Nombre:</strong> {coche.usuario?.nombre}</p>
+              <p><strong>Email:</strong> {coche.usuario?.email}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
