@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 // Obtener todos los coches
 export const getCoches = async () => {
-  const response = await fetch(`${API_URL}/coches`);
+  const response = await fetch(`${API_URL}/api/coches`);
   if (!response.ok)
     throw new Error('Error al obtener los coches');
   const data = await response.json();
@@ -13,7 +13,7 @@ export const getCoches = async () => {
 
 // Obtener coche por ID
 export const getCocheById = async (id) => {
-  const response = await fetch(`${API_URL}/coches/${id}`);
+  const response = await fetch(`${API_URL}/api/coches/${id}`);
   if (!response.ok)
     throw new Error('Error al obtener el coche');
   const data = await response.json();
@@ -32,7 +32,7 @@ export const crearCoche = async (nuevoCoche) => {
     }
   }
 
-  const response = await axios.post(`${API_URL}/coches`, formData, {
+  const response = await axios.post(`${API_URL}/api/coches`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -58,7 +58,7 @@ export const editarCoche = async (id, datosCoche) => {
     }
   }
 
-  const response = await axios.put(`${API_URL}/coches/${id}`, formData, {
+  const response = await axios.put(`${API_URL}/api/coches/${id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -70,7 +70,7 @@ export const editarCoche = async (id, datosCoche) => {
 
 // Eliminar coche
 export const eliminarCoche = async (id, token) => {
-  const response = await axios.delete(`${API_URL}/coches/${id}`, {
+  const response = await axios.delete(`${API_URL}/api/coches/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -92,7 +92,7 @@ export const actualizarEstadoCoche = async (id, datosActualizados, token) => {
       }
     }
 
-    const response = await axios.put(`${API_URL}/coches/${id}`, formData, {
+    const response = await axios.put(`${API_URL}/api/coches/${id}`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
@@ -108,7 +108,7 @@ export const actualizarEstadoCoche = async (id, datosActualizados, token) => {
 
 // Obtener marcas y modelos para el filtro
 export const getOpcionesFiltro = async () => {
-  const response = await fetch(`${API_URL}/coches/filtros/opciones`);
+  const response = await fetch(`${API_URL}/api/opciones-filtro`);
   if (!response.ok)
     throw new Error('Error al obtener opciones de filtro');
   const data = await response.json();

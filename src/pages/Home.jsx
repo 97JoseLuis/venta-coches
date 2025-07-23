@@ -18,7 +18,6 @@ const Home = () => {
         setTodosLosCoches(cochesData);
         setOpcionesFiltro(opciones);
       } catch (error) {
-        console.error('Error al cargar datos:', error);
       }
     };
 

@@ -537,13 +537,13 @@ ul li {
 .hero-banner {
   background-image: url('/parking.png'); 
   background-position: center;
+  background-repeat: no-repeat;
   background-size: cover;
   padding: 5rem 1rem;
   text-align: center;
   color: #fff;
   position: relative;
   width: 100%;
-  height: 300px;
   overflow: hidden;
 }
 
