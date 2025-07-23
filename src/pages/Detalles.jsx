@@ -6,14 +6,15 @@ import { AuthContext } from '../context/AuthContext';
 const Detalles = () => {
   // Obtenemos el ID del coche desde la URL y el usuario autenticado
   const { id } = useParams();
-  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [coche, setCoche] = useState(null);              // Datos del coche
   const [mostrarContacto, setMostrarContacto] = useState(false);  // Toggle para mostrar contacto
 
-  // Verificamos si el usuario actual es el dueño del coche
-  const esPropietario = user && coche?.userId && String(coche.userId._id) === String(user._id);
+  // Verificamos si el usuario actual es el dueño del coche (adaptado para cuando userId es string o objeto)
+  const esPropietario = user && coche &&
+    (coche.userId === user._id || coche.userId?._id === user._id);
 
   // Al cargar el componente, obtenemos los datos del coche desde la API
   useEffect(() => {
@@ -44,22 +45,22 @@ const Detalles = () => {
     }
   };
 
-  // Eliminar el coche
- const handleEliminar = async () => {
-  const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este anuncio?');
-  if (!confirmar) return;
+  // Eliminar anuncio
+  const handleEliminar = async () => {
+    const confirmar = window.confirm('¿Seguro que deseas eliminar este anuncio?');
+    if (!confirmar) return;
 
-  try {
-    const token = localStorage.getItem('token');
-    await axios.delete(`${import.meta.env.VITE_API_URL}/api/coches/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    navigate('/'); // Redirigir al inicio después de eliminar
-  } catch (error) {
-    console.error('Error al eliminar el coche:', error);
-    alert('No se pudo eliminar el anuncio.');
-  }
-};
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/coches/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      navigate('/');
+    } catch (error) {
+      console.error('Error al eliminar coche:', error);
+      alert('No se pudo eliminar el anuncio.');
+    }
+  };
 
   // Si aún no se ha cargado el coche, mostramos mensaje de carga
   if (!coche) return <p>Cargando...</p>;
@@ -72,11 +73,7 @@ const Detalles = () => {
       {/* Imagen del coche con etiqueta de estado si no está disponible */}
       <div className="detalle-imagen-container">
         <img
-          src={
-            coche.imagen?.startsWith('/uploads')
-              ? `${import.meta.env.VITE_API_URL}${coche.imagen}`
-              : coche.imagen
-          }
+          src={`${import.meta.env.VITE_API_URL}${coche.imagen}`}
           alt={`${coche.marca} ${coche.modelo}`}
         />
 
@@ -88,13 +85,15 @@ const Detalles = () => {
       </div>
 
       {/* Información general del coche */}
-      <p><strong>Precio:</strong> {coche.precio} €</p>
-      <p><strong>Año:</strong> {coche.anio}</p>
-      <p><strong>Descripción:</strong> {coche.descripcion}</p>
+      <div>
+        <p><strong>Precio:</strong> {coche.precio} €</p>
+        <p><strong>Año:</strong> {coche.anio}</p>
+        <p><strong>Descripción:</strong> {coche.descripcion}</p>
+      </div>
 
       {/* Acciones disponibles para el propietario (cambiar estado y editar) */}
-      <div className="detalles-acciones">
-        {esPropietario && (
+      {esPropietario && (
+        <div className="detalles-acciones">
           <>
             {coche.estado !== 'disponible' && (
               <button onClick={() => cambiarEstado('disponible')}>Disponible</button>
@@ -105,11 +104,11 @@ const Detalles = () => {
             {coche.estado !== 'vendido' && (
               <button onClick={() => cambiarEstado('vendido')}>Vendido</button>
             )}
-            <Link to={`/editar/${coche._id}`}>Editar anuncio</Link>
-            <button onClick={handleEliminar}>Eliminar anuncio</button>
+            <Link to={`/editar/${coche._id}`}>Editar</Link>
+            <button onClick={handleEliminar}>Eliminar</button>
           </>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Botón para contactar con el anunciante (solo visible si NO es el dueño) */}
       {!esPropietario && (
