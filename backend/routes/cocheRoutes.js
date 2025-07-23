@@ -74,7 +74,7 @@ router.post(
   async (req, res, next) => {
     try {
       const { marca, modelo, anio, precio, descripcion } = req.body;
-      const imagenUrl = req.file ? `/uploads/${req.file.filename}` : '';
+      const imagenUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : '';
       const coche = new Coche({
         marca,
         modelo,
