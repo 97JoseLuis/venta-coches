@@ -97,23 +97,26 @@ router.put(
   '/:id',
   verificarToken,
   upload.single('imagen'),
-  validarCoche,
-  manejarErroresDeValidacion,
   async (req, res, next) => {
     try {
       const coche = await Coche.findById(req.params.id);
-      if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
-
-      if (coche.userId.toString() !== req.usuario.id) {
-        return res.status(403).json({ mensaje: 'No autorizado' });
+      if (!coche) {
+        return res.status(404).json({ mensaje: 'Coche no encontrado' });
       }
 
-      coche.marca = req.body.marca;
-      coche.modelo = req.body.modelo;
-      coche.anio = parseInt(req.body.anio, 10);
-      coche.precio = parseFloat(req.body.precio);
-      coche.descripcion = req.body.descripcion;
+      // Verificar que el usuario logueado sea el propietario del coche
+      if (coche.userId.toString() !== req.usuario.id) {
+        return res.status(403).json({ mensaje: 'No autorizado para editar este coche' });
+      }
 
+      // Actualizar los campos del coche
+      coche.marca = req.body.marca || coche.marca;
+      coche.modelo = req.body.modelo || coche.modelo;
+      coche.anio = req.body.anio || coche.anio;
+      coche.precio = req.body.precio || coche.precio;
+      coche.descripcion = req.body.descripcion || coche.descripcion;
+
+      // Actualizar la imagen si se sube una nueva
       if (req.file) {
         coche.imagen = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
       }
@@ -121,12 +124,7 @@ router.put(
       const actualizado = await coche.save();
       res.json(actualizado);
     } catch (err) {
-      console.error('Error al actualizar coche:', err);
-      res.status(400).json({
-        mensaje: 'Error al actualizar el coche',
-        error: err.message,
-        detalles: err.errors || null,
-      });
+      next(err);
     }
   }
 );

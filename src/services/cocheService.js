@@ -88,15 +88,31 @@ export const eliminarCoche = async (id, token) => {
 // Actualizar coche (con imagen opcional)
 export const actualizarEstadoCoche = async (id, datosActualizados, token) => {
   try {
+    if (!token) {
+      throw new Error('Token de autorización no disponible.');
+    }
+
     const formData = new FormData();
     for (const key in datosActualizados) {
       let valor = datosActualizados[key];
       if (valor !== null && valor !== undefined && valor !== '') {
-        if (key === 'anio') valor = parseInt(valor);
-        if (key === 'precio') valor = parseFloat(valor);
+        if (key === 'anio') {
+          valor = parseInt(valor);
+          if (isNaN(valor) || valor < 1900 || valor > new Date().getFullYear()) {
+            throw new Error('El año debe ser un número válido entre 1900 y el año actual.');
+          }
+        }
+        if (key === 'precio') {
+          valor = parseFloat(valor);
+          if (isNaN(valor) || valor <= 0) {
+            throw new Error('El precio debe ser un número mayor a 0.');
+          }
+        }
         formData.append(key, valor);
       }
     }
+
+    console.log('Datos enviados:', Object.fromEntries(formData.entries()));
 
     const response = await axios.put(`${API_URL}/api/coches/${id}`, formData, {
       headers: {
@@ -107,7 +123,11 @@ export const actualizarEstadoCoche = async (id, datosActualizados, token) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error al actualizar coche:', error.response?.data || error.message);
+    console.error(
+      'Error al actualizar coche:',
+      error.response?.status,
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

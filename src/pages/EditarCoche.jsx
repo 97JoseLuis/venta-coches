@@ -35,11 +35,10 @@ const EditarCoche = () => {
 
         const cocheUserId = data.userId?._id || data.userId;
 
-        if (!usuario || usuario.id !== cocheUserId) {
+        if (!usuario || String(usuario.id) !== String(cocheUserId)) {
           alert('No tienes permisos para editar este coche.');
           return navigate('/');
-      }
-
+        }
 
         setFormulario({
           marca: data.marca ?? '',
@@ -59,7 +58,7 @@ const EditarCoche = () => {
 
     cargarCoche();
   }, [id]);
-  
+
   const validar = () => {
     const erroresTemp = {};
     const anioActual = new Date().getFullYear();
@@ -78,6 +77,9 @@ const EditarCoche = () => {
       const tipo = formulario.imagen.type;
       if (!['image/jpeg', 'image/png'].includes(tipo)) {
         erroresTemp.imagen = 'La imagen debe ser JPG o PNG';
+      }
+      if (formulario.imagen.size > 5 * 1024 * 1024) {
+        erroresTemp.imagen = 'La imagen no debe superar los 5 MB';
       }
     }
 
@@ -98,14 +100,17 @@ const EditarCoche = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validar()) return;
+    if (!validar()) {
+      alert('Por favor, corrige los errores en el formulario antes de continuar.');
+      return;
+    }
 
     try {
       await actualizarEstadoCoche(id, formulario, token);
       navigate(`/detalles/${id}`);
     } catch (error) {
       alert('Error al actualizar el coche');
-      console.error(error);
+      console.error('Detalles del error:', error);
     }
   };
 
