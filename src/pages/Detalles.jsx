@@ -13,9 +13,7 @@ const Detalles = () => {
   const [mostrarContacto, setMostrarContacto] = useState(false);  // Toggle para mostrar contacto
 
   // Verificamos si el usuario actual es el dueño del coche
-  const esPropietario = user && (
-    coche?.userId === user._id || coche?.userId?._id === user._id
-  );
+  const esPropietario = user && coche?.userId && String(coche.userId._id) === String(user._id);
 
   // Al cargar el componente, obtenemos los datos del coche desde la API
   useEffect(() => {
@@ -47,21 +45,21 @@ const Detalles = () => {
   };
 
   // Eliminar el coche
-  const eliminarCoche = async () => {
-    const confirm = window.confirm('¿Estás seguro de eliminar este coche?');
-    if (!confirm) return;
+ const handleEliminar = async () => {
+  const confirmar = window.confirm('¿Estás seguro de que deseas eliminar este anuncio?');
+  if (!confirmar) return;
 
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/coches/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      navigate('/');
-    } catch (error) {
-      console.error('Error al eliminar coche:', error);
-      alert('Error al eliminar el coche');
-    }
-  };
+  try {
+    const token = localStorage.getItem('token');
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/coches/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    navigate('/'); // Redirigir al inicio después de eliminar
+  } catch (error) {
+    console.error('Error al eliminar el coche:', error);
+    alert('No se pudo eliminar el anuncio.');
+  }
+};
 
   // Si aún no se ha cargado el coche, mostramos mensaje de carga
   if (!coche) return <p>Cargando...</p>;
@@ -107,8 +105,8 @@ const Detalles = () => {
             {coche.estado !== 'vendido' && (
               <button onClick={() => cambiarEstado('vendido')}>Vendido</button>
             )}
-            <Link to={`/editar/${coche._id}`}>Editar</Link>
-            <button onClick={eliminarCoche}>Eliminar</button>
+            <Link to={`/editar/${coche._id}`}>Editar anuncio</Link>
+            <button onClick={handleEliminar}>Eliminar anuncio</button>
           </>
         )}
       </div>
