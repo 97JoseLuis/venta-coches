@@ -21,27 +21,31 @@ export const getCocheById = async (id) => {
 };
 
 // Crear nuevo coche (con FormData e imagen)
-export const crearCoche = async (datos) => {
+export const crearCoche = async (formulario) => {
+  const token = localStorage.getItem('token');
   const formData = new FormData();
-  formData.append('marca', datos.marca);
-  formData.append('modelo', datos.modelo);
-  formData.append('anio', datos.anio);
-  formData.append('precio', datos.precio);
-  formData.append('descripcion', datos.descripcion);
-  if (datos.imagen) {
-    formData.append('imagen', datos.imagen); // este nombre debe coincidir con el de multer
+
+  // Añadir los campos uno a uno
+  formData.append('marca', formulario.marca);
+  formData.append('modelo', formulario.modelo);
+  formData.append('anio', formulario.anio);
+  formData.append('precio', formulario.precio);
+  formData.append('descripcion', formulario.descripcion);
+
+  if (formulario.imagen) {
+    formData.append('imagen', formulario.imagen); // clave 'imagen' debe coincidir con upload.single('imagen')
   }
 
-  const token = localStorage.getItem('token');
-
-  const response = await axios.post(`${API_URL}/api/coches`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return response.data;
+  return axios.post(
+    `${import.meta.env.VITE_API_URL}/api/coches`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 // Editar coche (por ID)
