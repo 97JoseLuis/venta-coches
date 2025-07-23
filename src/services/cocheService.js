@@ -23,27 +23,20 @@ export const getCocheById = async (id) => {
 // Crear nuevo coche (con FormData e imagen)
 export const crearCoche = async (formulario) => {
   const token = localStorage.getItem('token');
-  const usuario = JSON.parse(localStorage.getItem('usuario'));
-
-  if (!usuario || !usuario._id) {
-    throw new Error('No hay usuario autenticado');
-  }
 
   const formData = new FormData();
-
   formData.append('marca', formulario.marca);
   formData.append('modelo', formulario.modelo);
   formData.append('anio', formulario.anio);
   formData.append('precio', formulario.precio);
   formData.append('descripcion', formulario.descripcion);
-  formData.append('userId', usuario._id); // 👈 AÑADIDO userId correctamente
 
   if (formulario.imagen) {
-    formData.append('imagen', formulario.imagen); // 👈 imagen debe coincidir con upload.single('imagen')
+    formData.append('imagen', formulario.imagen);
   }
 
   const response = await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/coches`,
+    `${API_URL}/api/coches`,
     formData,
     {
       headers: {
@@ -54,8 +47,7 @@ export const crearCoche = async (formulario) => {
   );
 
   return response.data;
-};
-
+}
 
 // Editar coche (por ID)
 export const editarCoche = async (id, datosCoche) => {

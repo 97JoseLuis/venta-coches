@@ -64,8 +64,11 @@ const VenderCoche = () => {
     if (formulario.imagen) formData.append('imagen', formulario.imagen);
 
     const user = JSON.parse(localStorage.getItem('usuario'));
-    formData.append('userId', user._id);
 
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+    
     // Usa axios o tu función crearCoche para hacer POST
     await crearCoche(formData); // asegúrate que acepta FormData
 
