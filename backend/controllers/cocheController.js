@@ -13,8 +13,30 @@ exports.getAllCoches = async (req, res, next) => {
 // Crear un nuevo coche
 exports.createCoche = async (req, res, next) => {
   try {
-    const nuevoCoche = new Coche(req.body); // Crear nuevo coche con los datos recibidos
-    const cocheGuardado = await nuevoCoche.save(); // Guardar en la DB
+    const {
+      marca,
+      modelo,
+      anio,
+      precio,
+      descripcion,
+      estado,
+      userId
+    } = req.body;
+
+    const imagen = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const nuevoCoche = new Coche({
+      marca,
+      modelo,
+      anio,
+      precio,
+      descripcion,
+      estado,
+      userId,
+      imagen
+    });
+
+    const cocheGuardado = await nuevoCoche.save();
     res.status(201).json(cocheGuardado);
   } catch (error) {
     next(error);
