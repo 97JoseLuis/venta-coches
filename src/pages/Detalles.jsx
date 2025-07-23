@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 const Detalles = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { usuario: user } = useContext(AuthContext);
 
   const [coche, setCoche] = useState(null);
   const [mostrarContacto, setMostrarContacto] = useState(false);
