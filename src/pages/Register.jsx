@@ -27,7 +27,7 @@ const Register = () => {
 
     try {
       // Registro con rol y clave si aplica
-      await axios.post(`${API_URL}/api/usuarios/registro`, {
+      await axios.post(`${API_URL}/usuarios/registro`, {
         nombre,
         email,
         password,
@@ -36,7 +36,7 @@ const Register = () => {
       });
 
       // Login automático
-      const res = await axios.post(`${API_URL}/api/usuarios/login`, {
+      const res = await axios.post(`${API_URL}/usuarios/login`, {
         email,
         password,
       });
