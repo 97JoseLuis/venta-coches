@@ -105,7 +105,7 @@ router.put(
       }
 
       // Verificar que el usuario logueado sea el propietario del coche
-      if (coche.userId.toString() !== req.usuario.id) {
+      if (String(coche.userId) !== String(req.usuario.id)) {
         return res.status(403).json({ mensaje: 'No autorizado para editar este coche' });
       }
 

@@ -50,17 +50,31 @@ const VenderCoche = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validar()) return;
+  e.preventDefault();
+  if (!validar()) return;
 
-    try {
-      await crearCoche(formulario);
-      navigate('/');
-    } catch (error) {
-      alert('Error al crear el coche');
-      console.error(error);
-    }
-  };
+  try {
+    const formData = new FormData();
+
+    formData.append('marca', formulario.marca);
+    formData.append('modelo', formulario.modelo);
+    formData.append('anio', formulario.anio);
+    formData.append('precio', formulario.precio);
+    formData.append('descripcion', formulario.descripcion);
+    if (formulario.imagen) formData.append('imagen', formulario.imagen);
+
+    const user = JSON.parse(localStorage.getItem('usuario'));
+    formData.append('userId', user._id);
+
+    // Usa axios o tu función crearCoche para hacer POST
+    await crearCoche(formData); // asegúrate que acepta FormData
+
+    navigate('/');
+  } catch (error) {
+    alert('Error al crear el coche');
+    console.error(error);
+  }
+};
 
   return (
     <div className="vender-container">

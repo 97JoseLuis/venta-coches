@@ -23,9 +23,10 @@ export const getCocheById = async (id) => {
 // Crear nuevo coche (con FormData e imagen)
 export const crearCoche = async (formulario) => {
   const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('usuario'));
+
   const formData = new FormData();
 
-  // Añadir los campos uno a uno
   formData.append('marca', formulario.marca);
   formData.append('modelo', formulario.modelo);
   formData.append('anio', formulario.anio);
@@ -33,20 +34,24 @@ export const crearCoche = async (formulario) => {
   formData.append('descripcion', formulario.descripcion);
 
   if (formulario.imagen) {
-    formData.append('imagen', formulario.imagen); // clave 'imagen' debe coincidir con upload.single('imagen')
+    formData.append('imagen', formulario.imagen);
   }
 
-  return axios.post(
-    `${import.meta.env.VITE_API_URL}/api/coches`,
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  // ✅ AÑADIR el ID del usuario autenticado
+  if (user?._id) {
+    formData.append('userId', user._id);
+  } else {
+    throw new Error('No se encontró el usuario autenticado en localStorage');
+  }
+
+  return axios.post(`${API_URL}/api/coches`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
+
 
 // Editar coche (por ID)
 export const editarCoche = async (id, datosCoche) => {
