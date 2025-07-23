@@ -27,7 +27,7 @@ const AdminPanel = () => {
   // Cargar lista de usuarios si el token es válido
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get(`${API_URL}/usuarios`, {
+      const res = await axios.get(`${API_URL}/api/usuarios`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -41,7 +41,7 @@ const AdminPanel = () => {
   // Cargar coches publicados
   const cargarCoches = async () => {
     try {
-      const res = await axios.get(`${API_URL}/coches`);
+      const res = await axios.get(`${API_URL}/api/coches`);
       setCoches(res.data);
     } catch (err) {
       setError('Error al cargar coches');
