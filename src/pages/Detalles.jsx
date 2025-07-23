@@ -53,7 +53,10 @@ const Detalles = () => {
 
       {/* Imagen del coche con etiqueta de estado si no está disponible */}
       <div className="detalle-imagen-container">
-        <img src={coche.imagen} alt={`${coche.marca} ${coche.modelo}`} />
+        <img
+          src={`${import.meta.env.VITE_API_URL}/${coche.imagen}`}
+          alt={`${coche.marca} ${coche.modelo}`}
+        />
 
         {coche.estado !== 'disponible' && (
           <div className={`estado-etiqueta ${coche.estado}`}>
