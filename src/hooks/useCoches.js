@@ -20,7 +20,7 @@ export function useCoches() {
     setError(null);
 
     try {
-      const res = await axios.get(`${API_URL}/api/coches`);
+      const res = await axios.get(`${API_URL}/coches`);
       setCoches(res.data);
     } catch (err) {
       setError(err.response?.data?.mensaje || 'Error al cargar coches');
@@ -42,7 +42,7 @@ export function useCoches() {
    */
   const borrarCoche = async (id) => {
     try {
-      await axios.delete(`${API_URL}/api/coches/${id}`, {
+      await axios.delete(`${API_URL}/coches/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -59,7 +59,7 @@ export function useCoches() {
    */
   const agregarCoche = async (nuevoCoche) => {
     try {
-      const res = await axios.post(`${API_URL}/api/coches`, nuevoCoche, {
+      const res = await axios.post(`${API_URL}/coches`, nuevoCoche, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
