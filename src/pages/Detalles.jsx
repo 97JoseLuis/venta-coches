@@ -4,33 +4,34 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 
 const Detalles = () => {
-  // Obtenemos el ID del coche desde la URL y el usuario autenticado
   const { id } = useParams();
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
-  const [coche, setCoche] = useState(null);              // Datos del coche
-  const [mostrarContacto, setMostrarContacto] = useState(false);  // Toggle para mostrar contacto
+  const [coche, setCoche] = useState(null);
+  const [mostrarContacto, setMostrarContacto] = useState(false);
 
-  // Verificamos si el usuario actual es el dueño del coche (adaptado para cuando userId es string o objeto)
-  const esPropietario = user && coche &&
-    (coche.userId === user._id || coche.userId?._id === user._id);
-
-  // Al cargar el componente, obtenemos los datos del coche desde la API
   useEffect(() => {
     const obtenerCoche = async () => {
       try {
         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/coches/${id}`);
         setCoche(data);
+
+        // Logs útiles para depuración
+        console.log("Usuario logueado:", user);
+        console.log("Propietario del coche:", data.userId);
+        console.log(
+          "¿Es propietario?:",
+          user && data.userId && String(data.userId._id || data.userId) === String(user._id)
+        );
       } catch (error) {
         console.error('Error al obtener coche:', error);
       }
     };
 
     obtenerCoche();
-  }, [id]);
+  }, [id, user]);
 
-  // Permite cambiar el estado del coche (disponible, reservado, vendido)
   const cambiarEstado = async (nuevoEstado) => {
     try {
       const token = localStorage.getItem('token');
@@ -39,38 +40,39 @@ const Detalles = () => {
         { estado: nuevoEstado },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setCoche({ ...coche, estado: data.estado }); // Actualiza el estado local
+      setCoche({ ...coche, estado: data.estado });
     } catch (error) {
       console.error('Error al cambiar estado:', error);
     }
   };
 
-  // Eliminar anuncio
-  const handleEliminar = async () => {
-    const confirmar = window.confirm('¿Seguro que deseas eliminar este anuncio?');
-    if (!confirmar) return;
+  const eliminarCoche = async () => {
+    const confirmacion = confirm('¿Estás seguro de que quieres eliminar este anuncio?');
+    if (!confirmacion) return;
 
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${import.meta.env.VITE_API_URL}/api/coches/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       navigate('/');
     } catch (error) {
       console.error('Error al eliminar coche:', error);
-      alert('No se pudo eliminar el anuncio.');
     }
   };
 
-  // Si aún no se ha cargado el coche, mostramos mensaje de carga
+  // Asegura que funciona tanto si coche.userId es string o un objeto con _id
+  const esPropietario =
+    user &&
+    coche?.userId &&
+    String(typeof coche.userId === 'object' ? coche.userId._id : coche.userId) === String(user._id);
+
   if (!coche) return <p>Cargando...</p>;
 
   return (
     <div className="detalles-container">
-      {/* Título con marca y modelo */}
       <h1>{coche.marca} {coche.modelo}</h1>
 
-      {/* Imagen del coche con etiqueta de estado si no está disponible */}
       <div className="detalle-imagen-container">
         <img
           src={`${import.meta.env.VITE_API_URL}${coche.imagen}`}
@@ -84,33 +86,45 @@ const Detalles = () => {
         )}
       </div>
 
-      {/* Información general del coche */}
-      <div>
-        <p><strong>Precio:</strong> {coche.precio} €</p>
-        <p><strong>Año:</strong> {coche.anio}</p>
-        <p><strong>Descripción:</strong> {coche.descripcion}</p>
-      </div>
+      <p><strong>Precio:</strong> {coche.precio} €</p>
+      <p><strong>Año:</strong> {coche.anio}</p>
+      <p><strong>Descripción:</strong> {coche.descripcion}</p>
 
-      {/* Acciones disponibles para el propietario (cambiar estado y editar) */}
       {esPropietario && (
         <div className="detalles-acciones">
-          <>
+          <div className="estado-botones">
             {coche.estado !== 'disponible' && (
-              <button onClick={() => cambiarEstado('disponible')}>Disponible</button>
+              <button
+                className="disponible-btn"
+                onClick={() => cambiarEstado('disponible')}
+              >
+                Disponible
+              </button>
             )}
             {coche.estado !== 'reservado' && (
-              <button onClick={() => cambiarEstado('reservado')}>Reservado</button>
+              <button
+                className="reservado-btn"
+                onClick={() => cambiarEstado('reservado')}
+              >
+                Reservado
+              </button>
             )}
             {coche.estado !== 'vendido' && (
-              <button onClick={() => cambiarEstado('vendido')}>Vendido</button>
+              <button
+                className="vendido-btn"
+                onClick={() => cambiarEstado('vendido')}
+              >
+                Vendido
+              </button>
             )}
+          </div>
+          <div>
             <Link to={`/editar/${coche._id}`}>Editar</Link>
-            <button onClick={handleEliminar}>Eliminar</button>
-          </>
+            <button onClick={eliminarCoche}>Eliminar</button>
+          </div>
         </div>
       )}
 
-      {/* Botón para contactar con el anunciante (solo visible si NO es el dueño) */}
       {!esPropietario && (
         <div className="contacto-anunciante">
           <button onClick={() => setMostrarContacto(!mostrarContacto)}>
