@@ -2,36 +2,41 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// 📦 Modelos y Middlewares
 const Coche = require('../models/coche');
 const verificarToken = require('../middleware/verificarToken');
 const { validarCoche } = require('../middleware/validaciones');
 const manejarErroresDeValidacion = require('../middleware/manejoValidaciones');
 
-// Configuración de multer para subir imágenes
+// 📁 Configuración de almacenamiento de imágenes
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '..', 'uploads');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    cb(null, dir);
+  },
   filename: (req, file, cb) => {
     const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, unique + '-' + file.originalname);
-  },
+  }
 });
 const upload = multer({ storage });
 
-// Obtener marcas y modelos únicos para filtros
+
+// ───────────────────────────────────────────────
+// GET /api/coches/filtros/opciones
 router.get('/filtros/opciones', async (req, res, next) => {
   try {
-    const coches = await Coche.find({}, 'marca modelo'); // Solo marca y modelo
-
+    const coches = await Coche.find({}, 'marca modelo');
     const opciones = {};
 
     coches.forEach((c) => {
-      if (!opciones[c.marca]) {
-        opciones[c.marca] = new Set();
-      }
+      if (!opciones[c.marca]) opciones[c.marca] = new Set();
       opciones[c.marca].add(c.modelo);
     });
 
-    // Convertimos los Sets a Arrays
     const resultado = {};
     for (const marca in opciones) {
       resultado[marca] = Array.from(opciones[marca]);
@@ -43,20 +48,20 @@ router.get('/filtros/opciones', async (req, res, next) => {
   }
 });
 
-// GET /api/coches - Obtener todos los coches
+// GET /api/coches
 router.get('/', async (req, res, next) => {
   try {
-    const coches = await Coche.find().populate('userId', 'nombre email'); // Poblamos el usuario
+    const coches = await Coche.find().populate('userId', 'nombre email');
     res.json(coches);
   } catch (err) {
     next(err);
   }
 });
 
-// GET /api/coches/:id - Obtener un coche por ID
+// GET /api/coches/:id
 router.get('/:id', async (req, res, next) => {
   try {
-    const coche = await Coche.findById(req.params.id).populate('userId', 'nombre email telefono'); // Poblamos el usuario
+    const coche = await Coche.findById(req.params.id).populate('userId', 'nombre email');
     if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
     res.json(coche);
   } catch (err) {
@@ -64,84 +69,85 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-// POST /api/coches - Crear un coche
+// POST /api/coches
 router.post(
   '/',
   verificarToken,
   upload.single('imagen'),
+  validarCoche,
+  manejarErroresDeValidacion,
   async (req, res, next) => {
     try {
-      console.log('Archivo recibido:', req.file); // Depuración
       const imagenUrl = req.file
         ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
         : '';
-      const nuevoCoche = {
+
+      const nuevoCoche = new Coche({
         marca: req.body.marca,
         modelo: req.body.modelo,
-        precio: req.body.precio,
         anio: req.body.anio,
+        precio: req.body.precio,
         descripcion: req.body.descripcion,
+        estado: 'disponible',
         imagen: imagenUrl,
         userId: req.usuario.id,
-      };
-      const coche = await Coche.create(nuevoCoche);
-      res.status(201).json(coche);
+      });
+
+      const cocheGuardado = await nuevoCoche.save();
+      res.status(201).json(cocheGuardado);
     } catch (err) {
       next(err);
     }
   }
 );
 
-// PUT /api/coches/:id - Actualizar un coche
+// PUT /api/coches/:id
 router.put(
   '/:id',
   verificarToken,
   upload.single('imagen'),
+  validarCoche,
+  manejarErroresDeValidacion,
   async (req, res, next) => {
     try {
       const coche = await Coche.findById(req.params.id);
-      if (!coche) {
-        return res.status(404).json({ mensaje: 'Coche no encontrado' });
-      }
+      if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
 
-      // Verificar que el usuario logueado sea el propietario del coche
-      if (String(coche.userId) !== String(req.usuario.id)) {
+      if (String(coche.userId) !== req.usuario.id) {
         return res.status(403).json({ mensaje: 'No autorizado para editar este coche' });
       }
 
-      // Actualizar los campos del coche
       coche.marca = req.body.marca || coche.marca;
       coche.modelo = req.body.modelo || coche.modelo;
       coche.anio = req.body.anio || coche.anio;
       coche.precio = req.body.precio || coche.precio;
       coche.descripcion = req.body.descripcion || coche.descripcion;
 
-      // Actualizar la imagen si se sube una nueva
       if (req.file) {
         coche.imagen = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
       }
 
-      const actualizado = await coche.save();
-      res.json(actualizado);
+      const cocheActualizado = await coche.save();
+      res.json(cocheActualizado);
     } catch (err) {
       next(err);
     }
   }
 );
 
-// PUT /api/coches/:id/estado - Cambiar estado (solo dueño)
+// PUT /api/coches/:id/estado
 router.put('/:id/estado', verificarToken, async (req, res, next) => {
   try {
     const coche = await Coche.findById(req.params.id);
     if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
 
-    // Solo el dueño puede cambiar el estado
-    if (coche.userId.toString() !== req.usuario.id) {
+    if (String(coche.userId) !== req.usuario.id) {
       return res.status(403).json({ mensaje: 'No autorizado para modificar este coche' });
     }
 
     const { estado } = req.body;
-    if (!['disponible', 'reservado', 'vendido'].includes(estado)) {
+    const estadosPermitidos = ['disponible', 'reservado', 'vendido'];
+    if (!estadosPermitidos.includes(estado)) {
       return res.status(400).json({ mensaje: 'Estado no válido' });
     }
 
@@ -153,14 +159,14 @@ router.put('/:id/estado', verificarToken, async (req, res, next) => {
   }
 });
 
-// DELETE /api/coches/:id - Eliminar un coche
+// DELETE /api/coches/:id
 router.delete('/:id', verificarToken, async (req, res, next) => {
   try {
     const coche = await Coche.findById(req.params.id);
     if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
 
-    if (coche.userId.toString() !== req.usuario.id) {
-      return res.status(403).json({ mensaje: 'No autorizado' });
+    if (String(coche.userId) !== req.usuario.id) {
+      return res.status(403).json({ mensaje: 'No autorizado para eliminar este coche' });
     }
 
     await coche.deleteOne();

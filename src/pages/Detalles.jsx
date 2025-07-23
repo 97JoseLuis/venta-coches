@@ -87,7 +87,7 @@ const Detalles = () => {
 
       <div className="detalle-imagen-container">
         <img
-          src={`${import.meta.env.VITE_API_URL}${coche.imagen}`}
+          src={coche.imagen} // ya es una URL completa
           alt={`${coche.marca} ${coche.modelo}`}
         />
 

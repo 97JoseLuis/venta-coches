@@ -23,7 +23,11 @@ export const getCocheById = async (id) => {
 // Crear nuevo coche (con FormData e imagen)
 export const crearCoche = async (formulario) => {
   const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('usuario'));
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+  if (!usuario || !usuario._id) {
+    throw new Error('No hay usuario autenticado');
+  }
 
   const formData = new FormData();
 
@@ -32,24 +36,24 @@ export const crearCoche = async (formulario) => {
   formData.append('anio', formulario.anio);
   formData.append('precio', formulario.precio);
   formData.append('descripcion', formulario.descripcion);
+  formData.append('userId', usuario._id); // 👈 AÑADIDO userId correctamente
 
   if (formulario.imagen) {
-    formData.append('imagen', formulario.imagen);
+    formData.append('imagen', formulario.imagen); // 👈 imagen debe coincidir con upload.single('imagen')
   }
 
-  // ✅ AÑADIR el ID del usuario autenticado
-  if (user?._id) {
-    formData.append('userId', user._id);
-  } else {
-    throw new Error('No se encontró el usuario autenticado en localStorage');
-  }
+  const response = await axios.post(
+    `${import.meta.env.VITE_API_URL}/api/coches`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
-  return axios.post(`${API_URL}/api/coches`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  return response.data;
 };
 
 

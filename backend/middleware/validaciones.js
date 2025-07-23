@@ -40,9 +40,9 @@ const validarCoche = [
     .withMessage('El precio debe ser un número mayor a 0'),
 
   body('descripcion')
-    .optional()
-    .isLength({ max: 1000 })
-    .withMessage('La descripción no puede superar los 1000 caracteres'),
+  .notEmpty().withMessage('La descripción es obligatoria')
+  .isLength({ max: 1000 })
+  .withMessage('La descripción no puede superar los 1000 caracteres'),
 ];
 
 module.exports = {
