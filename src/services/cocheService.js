@@ -108,7 +108,7 @@ export const actualizarEstadoCoche = async (id, datosActualizados, token) => {
 
 // Obtener marcas y modelos para el filtro
 export const getOpcionesFiltro = async () => {
-  const response = await fetch(`${API_URL}/api/opciones-filtro`);
+  const response = await fetch(`${API_URL}/api/coches/filtros/opciones`);
   if (!response.ok)
     throw new Error('Error al obtener opciones de filtro');
   const data = await response.json();
