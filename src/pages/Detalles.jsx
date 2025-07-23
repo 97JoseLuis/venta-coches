@@ -93,34 +93,13 @@ const Detalles = () => {
       {esPropietario && (
         <div className="detalles-acciones">
           <div className="estado-botones">
-            {coche.estado !== 'disponible' && (
-              <button
-                className="disponible-btn"
-                onClick={() => cambiarEstado('disponible')}
-              >
-                Disponible
-              </button>
-            )}
-            {coche.estado !== 'reservado' && (
-              <button
-                className="reservado-btn"
-                onClick={() => cambiarEstado('reservado')}
-              >
-                Reservado
-              </button>
-            )}
-            {coche.estado !== 'vendido' && (
-              <button
-                className="vendido-btn"
-                onClick={() => cambiarEstado('vendido')}
-              >
-                Vendido
-              </button>
-            )}
+            <button className="disponible-btn">Disponible</button>
+            <button className="reservado-btn">Reservado</button>
+            <button className="vendido-btn">Vendido</button>
           </div>
           <div>
-            <Link to={`/editar/${coche._id}`}>Editar</Link>
-            <button onClick={eliminarCoche}>Eliminar</button>
+            <Link to={`/editar/${coche?._id}`}>Editar</Link>
+            <button>Eliminar</button>
           </div>
         </div>
       )}
