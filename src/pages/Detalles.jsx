@@ -69,24 +69,24 @@ const Detalles = () => {
       <p><strong>Precio:</strong> {coche.precio} €</p>
       <p><strong>Año:</strong> {coche.anio}</p>
       <p><strong>Descripción:</strong> {coche.descripcion}</p>
-
-      {/* Acciones disponibles para el propietario (cambiar estado y editar) */}
-      <div className="detalles-acciones">
-        {esPropietario && (
-          <>
-            {coche.estado !== 'disponible' && (
-              <button onClick={() => cambiarEstado('disponible')}>Disponible</button>
-            )}
-            {coche.estado !== 'reservado' && (
-              <button onClick={() => cambiarEstado('reservado')}>Reservado</button>
-            )}
-            {coche.estado !== 'vendido' && (
-              <button onClick={() => cambiarEstado('vendido')}>Vendido</button>
-            )}
-            <Link to={`/editar/${coche._id}`}>Editar</Link>
-          </>
-        )}
-      </div>
+        
+        {/* Acciones disponibles para el propietario (cambiar estado y editar) */}
+        <div className="detalles-acciones">
+          {user && coche?.userId && String(coche.userId._id) === String(user._id) && (
+            <>
+              {coche.estado !== 'disponible' && (
+                <button onClick={() => cambiarEstado('disponible')}>Disponible</button>
+              )}
+              {coche.estado !== 'reservado' && (
+                <button onClick={() => cambiarEstado('reservado')}>Reservado</button>
+              )}
+              {coche.estado !== 'vendido' && (
+                <button onClick={() => cambiarEstado('vendido')}>Vendido</button>
+              )}
+              <Link to={`/editar/${coche._id}`}>Editar</Link>
+            </>
+          )}
+        </div>
 
       {/* Botón para contactar con el anunciante (solo visible si NO es el dueño) */}
       {!esPropietario && (

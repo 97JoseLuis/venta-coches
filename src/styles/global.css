@@ -353,14 +353,22 @@ textarea {
 }
 
 .detalles-acciones button {
-  background-color: #dc3545;
-  color: #fff;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
+  margin-right: 10px;
+  margin-top: 10px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
+
 .detalles-acciones button:hover {
-  background-color: #b02a37;
+   background-color: #0056b3;
+
 }
 
 /* ------------------ ADMIN --------------- */
