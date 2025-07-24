@@ -1,30 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// URL del backend definida desde el entorno (.env)
 const API_URL = import.meta.env.VITE_API_URL;
 
-/**
- * Panel de administración para usuarios con rol admin
- * Permite visualizar usuarios y coches registrados
- */
 const AdminPanel = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [coches, setCoches] = useState([]);
   const [error, setError] = useState('');
 
   const token = localStorage.getItem('token');
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
 
   useEffect(() => {
-    if (token) {
-      cargarUsuarios();
-      cargarCoches();
-    } else {
+    if (!token || !usuario || usuario.rol !== 'admin') {
       setError('Acceso denegado. No autorizado.');
+      return;
     }
+
+    cargarUsuarios();
+    cargarCoches();
   }, []);
 
-  // Cargar lista de usuarios si el token es válido
   const cargarUsuarios = async () => {
     try {
       const res = await axios.get(`${API_URL}/api/usuarios`, {
@@ -38,7 +34,6 @@ const AdminPanel = () => {
     }
   };
 
-  // Cargar coches publicados
   const cargarCoches = async () => {
     try {
       const res = await axios.get(`${API_URL}/api/coches`);
@@ -52,12 +47,10 @@ const AdminPanel = () => {
     <div className="admin-panel">
       <h2>Panel de Administración</h2>
 
-      {/* Mostrar errores si hay */}
       {error && <p className="error">{error}</p>}
 
       {!error && (
         <>
-          {/* Sección de usuarios */}
           <section>
             <h3>Usuarios registrados</h3>
             <table>
@@ -80,7 +73,6 @@ const AdminPanel = () => {
             </table>
           </section>
 
-          {/* Sección de coches */}
           <section>
             <h3>Coches publicados</h3>
             <ul>

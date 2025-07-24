@@ -4,6 +4,7 @@ const Usuario = require('../models/usuario');
 const jwt = require('jsonwebtoken');
 const { validarRegistro, validarLogin } = require('../middleware/validaciones');
 const manejarErroresDeValidacion = require('../middleware/manejoValidaciones');
+const verificarToken = require('../middleware/verificarToken'); // Asegúrate de importar esto
 
 // Registro de usuario
 router.post('/registro', validarRegistro, manejarErroresDeValidacion, async (req, res) => {
@@ -19,16 +20,15 @@ router.post('/registro', validarRegistro, manejarErroresDeValidacion, async (req
     await nuevoUsuario.save();
 
     const token = jwt.sign(
-  {
-    id: nuevoUsuario._id,
-    nombre: nuevoUsuario.nombre,
-    email: nuevoUsuario.email,
-    rol: nuevoUsuario.rol
-  },
-  process.env.JWT_SECRET,
-  { expiresIn: '7d' }
-);
-
+      {
+        id: nuevoUsuario._id,
+        nombre: nuevoUsuario.nombre,
+        email: nuevoUsuario.email,
+        rol: nuevoUsuario.rol
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
     res.status(201).json({
       token,
@@ -60,15 +60,15 @@ router.post('/login', validarLogin, manejarErroresDeValidacion, async (req, res)
     }
 
     const token = jwt.sign(
-  {
-    id: usuario._id,
-    nombre: usuario.nombre,
-    email: usuario.email,
-    rol: usuario.rol  // <- asegúrate de incluir esto si tienes roles
-  },
-  process.env.JWT_SECRET,
-  { expiresIn: '7d' }
-);
+      {
+        id: usuario._id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        rol: usuario.rol
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
 
     res.json({
       token,
@@ -83,6 +83,21 @@ router.post('/login', validarLogin, manejarErroresDeValidacion, async (req, res)
   } catch (error) {
     console.error('Error al iniciar sesión:', error);
     res.status(500).json({ mensaje: 'Error en el servidor al iniciar sesión' });
+  }
+});
+
+// Obtener todos los usuarios (solo admin)
+router.get('/', verificarToken, async (req, res) => {
+  try {
+    if (req.usuario.rol !== 'admin') {
+      return res.status(403).json({ mensaje: 'Acceso denegado. Se requiere rol de administrador.' });
+    }
+
+    const usuarios = await Usuario.find().select('-password');
+    res.json(usuarios);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    res.status(500).json({ mensaje: 'Error en el servidor al obtener usuarios' });
   }
 });
 
