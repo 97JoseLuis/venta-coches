@@ -76,8 +76,10 @@ router.post('/login', validarLogin, manejarErroresDeValidacion, async (req, res)
         _id: usuario._id,
         nombre: usuario.nombre,
         email: usuario.email,
-      },
+        rol: usuario.rol,
+      }
     });
+
   } catch (error) {
     console.error('Error al iniciar sesión:', error);
     res.status(500).json({ mensaje: 'Error en el servidor al iniciar sesión' });

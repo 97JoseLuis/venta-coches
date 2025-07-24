@@ -45,11 +45,13 @@ exports.createCoche = async (req, res, next) => {
 
 // Obtener un coche por ID
 exports.getCocheById = async (req, res, next) => {
-  try {
-    const coche = await Coche.findById(req.params.id).populate('userId'); // Busca el coche por ID y rellena el campo userId
+   try {
+    const coche = await Coche.findById(req.params.id).populate('userId', 'nombre email');
+
     if (!coche) {
       return res.status(404).json({ mensaje: 'Coche no encontrado' });
     }
+
     res.json(coche);
   } catch (error) {
     next(error);

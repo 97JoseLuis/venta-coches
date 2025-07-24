@@ -80,11 +80,11 @@ const loginUsuario = async (req, res, next) => {
     res.json({
       token,
       usuario: {
-        id: usuario._id.toString(), // 
+        _id: usuario._id,
         nombre: usuario.nombre,
         email: usuario.email,
-        rol: usuario.rol,
-      },
+        rol: usuario.rol
+      }
     });
   } catch (err) {
     next(err);

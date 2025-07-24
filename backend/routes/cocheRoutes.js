@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 
-// 📁 Modelos y Middlewares
+// Modelos y Middlewares
 const Coche = require('../models/coche');
 const verificarToken = require('../middleware/verificarToken');
 
-// 📦 Cloudinary + Multer setup
+// Cloudinary + Multer setup
 const multer = require('multer');
 const { storage } = require('../config/cloudinary'); // Asegúrate de tener este archivo
 const upload = multer({ storage });

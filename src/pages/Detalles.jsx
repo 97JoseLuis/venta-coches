@@ -17,6 +17,10 @@ const Detalles = () => {
     const cocheId = String(coche.userId._id || coche.userId);
     const usuarioId = String(user._id || user.id);
 
+    console.log('[✔️ DEBUG] Usuario logueado ID:', usuarioId);
+    console.log('[✔️ DEBUG] Propietario del coche ID:', cocheId);
+    console.log('[✔️ DEBUG] Es propietario:', cocheId === usuarioId);
+
     return cocheId === usuarioId;
   }, [user, coche]);
 
@@ -28,7 +32,7 @@ const Detalles = () => {
         );
         setCoche(data);
       } catch (error) {
-        console.error('Error al obtener coche:', error);
+        console.error('❌ Error al obtener coche:', error);
         alert('No se pudo cargar el coche');
       }
     };
@@ -55,7 +59,7 @@ const Detalles = () => {
       );
       setCoche({ ...coche, estado: data.estado });
     } catch (error) {
-      console.error('Error al cambiar estado:', error);
+      console.error('❌ Error al cambiar estado:', error);
       alert(error.response?.data?.mensaje || 'No se pudo cambiar el estado');
     }
   };
@@ -72,7 +76,7 @@ const Detalles = () => {
       alert('Coche eliminado correctamente');
       navigate('/');
     } catch (error) {
-      console.error('Error al eliminar coche:', error);
+      console.error('❌ Error al eliminar coche:', error);
       alert(error.response?.data?.mensaje || 'No se pudo eliminar el coche');
     }
   };
