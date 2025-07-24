@@ -18,8 +18,13 @@ if (!fs.existsSync(uploadsPath)) {
 }
 
 // Middlewares
-app.use(cors({origin: ['https://venta-coches.vercel.app'],
-  credentials: true}));
+app.use(cors({
+  origin: [
+    'https://venta-coches.vercel.app',
+    /^https:\/\/venta-coches.*\.vercel\.app$/ // Acepta cualquier subdominio de Vercel para previews
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
