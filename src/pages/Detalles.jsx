@@ -14,14 +14,23 @@ const Detalles = () => {
   const esPropietario = useMemo(() => {
     if (!user || !coche?.userId) return false;
 
-    const cocheId = String(coche.userId._id || coche.userId);
+    // 🧠 Extraer correctamente el ID del propietario
+    let cocheOwnerId = '';
+    if (typeof coche.userId === 'string') {
+      cocheOwnerId = coche.userId;
+    } else if (typeof coche.userId._id === 'string') {
+      cocheOwnerId = coche.userId._id;
+    } else {
+      cocheOwnerId = String(coche.userId);
+    }
+
     const usuarioId = String(user._id || user.id);
 
-    console.log('[✔️ DEBUG] Usuario logueado ID:', usuarioId);
-    console.log('[✔️ DEBUG] Propietario del coche ID:', cocheId);
-    console.log('[✔️ DEBUG] Es propietario:', cocheId === usuarioId);
+    console.log('✅ Usuario logueado ID:', usuarioId);
+    console.log('✅ Propietario del coche ID:', cocheOwnerId);
+    console.log('✅ Es propietario:', cocheOwnerId === usuarioId);
 
-    return cocheId === usuarioId;
+    return cocheOwnerId === usuarioId;
   }, [user, coche]);
 
   useEffect(() => {
@@ -32,7 +41,7 @@ const Detalles = () => {
         );
         setCoche(data);
       } catch (error) {
-        console.error('❌ Error al obtener coche:', error);
+        console.error('Error al obtener coche:', error);
         alert('No se pudo cargar el coche');
       }
     };
@@ -59,7 +68,7 @@ const Detalles = () => {
       );
       setCoche({ ...coche, estado: data.estado });
     } catch (error) {
-      console.error('❌ Error al cambiar estado:', error);
+      console.error('Error al cambiar estado:', error);
       alert(error.response?.data?.mensaje || 'No se pudo cambiar el estado');
     }
   };
@@ -76,7 +85,7 @@ const Detalles = () => {
       alert('Coche eliminado correctamente');
       navigate('/');
     } catch (error) {
-      console.error('❌ Error al eliminar coche:', error);
+      console.error('Error al eliminar coche:', error);
       alert(error.response?.data?.mensaje || 'No se pudo eliminar el coche');
     }
   };
