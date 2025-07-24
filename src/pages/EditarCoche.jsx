@@ -33,14 +33,18 @@ const EditarCoche = () => {
       try {
         const data = await getCocheById(id);
 
+        // 🔧 CORREGIDO: comparación robusta del ID
         const userId = String(usuario?._id || usuario?.id);
-        const ownerId = String(data.userId?._id || data.userId);
+        const ownerId =
+          typeof data.userId === 'object' && data.userId !== null
+            ? String(data.userId._id || data.userId.id)
+            : String(data.userId);
 
-        console.log('🟢 Usuario logueado:', usuario);
+        console.log('🟢 Usuario logueado ID:', userId);
         console.log('🟢 ID del propietario del coche:', ownerId);
-        console.log('🟢 Comparación:', userId, '===', ownerId);
+        console.log('🟢 Es propietario:', userId === ownerId);
 
-        if (userId !== ownerId) {
+        if (!usuario || userId !== ownerId) {
           alert('No tienes permisos para editar este coche.');
           return navigate('/');
         }
