@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
           const parsed = JSON.parse(usuarioGuardado);
           const usuarioFinal = {
             ...parsed,
-            _id: parsed._id || parsed.id, // ✅ Asegura _id esté disponible
+            _id: parsed._id || parsed.id, // Asegura _id esté disponible
           };
           setUsuario(usuarioFinal);
         } else {
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   const login = (token, usuario) => {
     const usuarioFinal = {
       ...usuario,
-      _id: usuario._id || usuario.id, // ✅ Normaliza el ID
+      _id: usuario._id || usuario.id, // Normaliza el ID
     };
     localStorage.setItem('token', token);
     localStorage.setItem('usuario', JSON.stringify(usuarioFinal));

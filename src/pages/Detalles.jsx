@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -11,10 +11,14 @@ const Detalles = () => {
   const [coche, setCoche] = useState(null);
   const [mostrarContacto, setMostrarContacto] = useState(false);
 
-  const esPropietario =
-  user &&
-  coche?.userId &&
-  String(coche.userId._id || coche.userId) === String(user._id || user.id);
+  const esPropietario = useMemo(() => {
+    if (!user || !coche?.userId) return false;
+
+    const cocheId = String(coche.userId._id || coche.userId);
+    const usuarioId = String(user._id || user.id);
+
+    return cocheId === usuarioId;
+  }, [user, coche]);
 
   useEffect(() => {
     const obtenerCoche = async () => {
