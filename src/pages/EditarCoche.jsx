@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getCocheById, actualizarCoche } from '../services/cocheService';
+import { getCocheById, actualizarEstadoCoche } from '../services/cocheService';
 
 const EditarCoche = () => {
   const { id } = useParams();
@@ -110,7 +110,7 @@ const EditarCoche = () => {
     }
 
     try {
-      await actualizarCoche(id, formulario, token);
+      await actualizarEstadoCoche(id, formulario, token);
       navigate(`/detalles/${id}`);
     } catch (error) {
       alert('Error al actualizar el coche');
