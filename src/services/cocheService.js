@@ -38,7 +38,6 @@ export const crearCoche = async (formulario) => {
 
   const response = await axios.post(`${API_URL}/api/coches`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,
     },
   });
