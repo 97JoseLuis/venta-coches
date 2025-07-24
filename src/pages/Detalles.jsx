@@ -12,9 +12,9 @@ const Detalles = () => {
   const [mostrarContacto, setMostrarContacto] = useState(false);
 
   const esPropietario =
-    user &&
-    coche?.userId &&
-    String(coche.userId._id || coche.userId) === String(user._id);
+  user &&
+  coche?.userId &&
+  String(coche.userId._id || coche.userId) === String(user._id || user.id);
 
   useEffect(() => {
     const obtenerCoche = async () => {

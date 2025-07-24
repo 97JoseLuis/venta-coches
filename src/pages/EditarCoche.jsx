@@ -39,7 +39,7 @@ const EditarCoche = () => {
         console.log('ID del coche:', cocheUserId);
         console.log('Comparación:', String(usuario.id), '===', String(cocheUserId));
 
-        if (!usuario || String(usuario.id) !== String(cocheUserId)) {
+        if (!usuario || String(usuario._id || usuario.id) !== String(cocheUserId)) {
           alert('No tienes permisos para editar este coche.');
           return navigate('/');
         }
