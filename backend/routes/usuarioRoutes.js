@@ -1,19 +1,68 @@
 const express = require('express');
 const router = express.Router();
-const {
-  registrarUsuario,
-  loginUsuario,
-  obtenerUsuarios
-} = require('../controllers/usuarioController');
-
-const verificarToken = require('../middleware/verificarToken');
-const verificarAdmin = require('../middleware/verificarAdmin');
+const Usuario = require('../models/usuario');
+const jwt = require('jsonwebtoken');
 const { validarRegistro, validarLogin } = require('../middleware/validaciones');
 const manejarErroresDeValidacion = require('../middleware/manejoValidaciones');
 
-// Rutas
-router.post('/registro', validarRegistro, manejarErroresDeValidacion, registrarUsuario);
-router.post('/login', validarLogin, manejarErroresDeValidacion, loginUsuario);
-router.get('/', verificarToken, verificarAdmin, obtenerUsuarios);
+// Registro de usuario
+router.post('/registro', validarRegistro, manejarErroresDeValidacion, async (req, res) => {
+  try {
+    const { nombre, email, password } = req.body;
+
+    const usuarioExistente = await Usuario.findOne({ email });
+    if (usuarioExistente) {
+      return res.status(400).json({ mensaje: 'El email ya está registrado' });
+    }
+
+    const nuevoUsuario = new Usuario({ nombre, email, password });
+    await nuevoUsuario.save();
+
+    const token = jwt.sign({ id: nuevoUsuario._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(201).json({
+      token,
+      usuario: {
+        _id: nuevoUsuario._id,
+        nombre: nuevoUsuario.nombre,
+        email: nuevoUsuario.email,
+      },
+    });
+  } catch (error) {
+    console.error('Error al registrar:', error);
+    res.status(500).json({ mensaje: 'Error en el servidor al registrar' });
+  }
+});
+
+// Login de usuario
+router.post('/login', validarLogin, manejarErroresDeValidacion, async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const usuario = await Usuario.findOne({ email });
+    if (!usuario) {
+      return res.status(400).json({ mensaje: 'Credenciales inválidas' });
+    }
+
+    const passwordValido = await usuario.compararPassword(password);
+    if (!passwordValido) {
+      return res.status(400).json({ mensaje: 'Credenciales inválidas' });
+    }
+
+    const token = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      token,
+      usuario: {
+        _id: usuario._id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+      },
+    });
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    res.status(500).json({ mensaje: 'Error en el servidor al iniciar sesión' });
+  }
+});
 
 module.exports = router;

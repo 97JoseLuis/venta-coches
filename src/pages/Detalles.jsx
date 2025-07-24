@@ -57,17 +57,13 @@ const Detalles = () => {
   };
 
   const handleEliminar = async () => {
-    const confirmar = window.confirm(
-      '¿Estás seguro de que quieres eliminar este anuncio?'
-    );
+    const confirmar = window.confirm('¿Estás seguro de que quieres eliminar este anuncio?');
     if (!confirmar) return;
 
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`${import.meta.env.VITE_API_URL}/api/coches/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       alert('Coche eliminado correctamente');
       navigate('/');
@@ -81,13 +77,15 @@ const Detalles = () => {
 
   return (
     <div className="detalles-container">
-      <h1>
-        {coche.marca} {coche.modelo}
-      </h1>
+      <h1>{coche.marca} {coche.modelo}</h1>
 
       <div className="detalle-imagen-container">
         <img
-          src={coche.imagen} // ya es una URL completa
+          src={
+            coche.imagen?.startsWith('http')
+              ? coche.imagen
+              : `${import.meta.env.VITE_API_URL}${coche.imagen}`
+          }
           alt={`${coche.marca} ${coche.modelo}`}
         />
 
@@ -98,31 +96,20 @@ const Detalles = () => {
         )}
       </div>
 
-      <p>
-        <strong>Precio:</strong>{' '}
-        {new Intl.NumberFormat('es-ES', {
-          style: 'currency',
-          currency: 'EUR',
-        }).format(coche.precio)}
-      </p>
-      <p>
-        <strong>Año:</strong> {coche.anio}
-      </p>
-      <p>
-        <strong>Descripción:</strong> {coche.descripcion}
-      </p>
+      <p><strong>Precio:</strong> {new Intl.NumberFormat('es-ES', {
+        style: 'currency', currency: 'EUR'
+      }).format(coche.precio)}</p>
+
+      <p><strong>Año:</strong> {coche.anio}</p>
+      <p><strong>Descripción:</strong> {coche.descripcion}</p>
 
       {esPropietario && (
         <div className="detalles-acciones">
           {coche.estado !== 'disponible' && (
-            <button onClick={() => cambiarEstado('disponible')}>
-              Disponible
-            </button>
+            <button onClick={() => cambiarEstado('disponible')}>Disponible</button>
           )}
           {coche.estado !== 'reservado' && (
-            <button onClick={() => cambiarEstado('reservado')}>
-              Reservado
-            </button>
+            <button onClick={() => cambiarEstado('reservado')}>Reservado</button>
           )}
           {coche.estado !== 'vendido' && (
             <button onClick={() => cambiarEstado('vendido')}>Vendido</button>
@@ -138,14 +125,10 @@ const Detalles = () => {
             Contactar con el anunciante
           </button>
 
-          {mostrarContacto && coche.userId && (
+          {mostrarContacto && coche.userId && typeof coche.userId === 'object' && (
             <div className="info-contacto">
-              <p>
-                <strong>Nombre:</strong> {coche.userId.nombre}
-              </p>
-              <p>
-                <strong>Email:</strong> {coche.userId.email}
-              </p>
+              <p><strong>Nombre:</strong> {coche.userId.nombre}</p>
+              <p><strong>Email:</strong> {coche.userId.email}</p>
             </div>
           )}
         </div>

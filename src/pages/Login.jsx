@@ -1,57 +1,79 @@
 import React, { useState, useContext } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { loginUsuario } from '../services/usuarioService';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [mensaje, setMensaje] = useState('');
 
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+
+    if (!form.email || !form.password) {
+      setError('Por favor, completa ambos campos.');
+      return;
+    }
 
     try {
-      const response = await loginUsuario({ email, password });
+      const res = await axios.post(`${API_URL}/api/usuarios/login`, {
+        email: form.email,
+        password: form.password,
+      });
 
-      login(response.usuario, response.token);
+      login(res.data.usuario, res.data.token);
+      setMensaje('Inicio de sesión exitoso. Redirigiendo...');
+      setError('');
 
-      if (response.usuario.rol === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+      setTimeout(() => {
+        if (res.data.usuario.rol === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+      }, 1000);
     } catch (err) {
-      setError('Correo o contraseña incorrectos');
+      const msg = err.response?.data?.mensaje || 'Error al iniciar sesión';
+      setError(msg);
+      setMensaje('');
     }
   };
 
   return (
-    <div className="register-container">
-      <h2>Iniciar Sesión</h2>
-      {error && <p className="error">{error}</p>}
+    <div className="login-container">
+      <h2>Iniciar sesión</h2>
 
-      <form onSubmit={handleSubmit}>
+      {mensaje && <p className="mensaje success">{mensaje}</p>}
+      {error && <p className="mensaje error">{error}</p>}
+
+      <form className="login-form" onSubmit={handleSubmit}>
         <input
           type="email"
+          name="email"
           placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={form.email}
+          onChange={handleChange}
           required
         />
-
         <input
           type="password"
+          name="password"
           placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={form.password}
+          onChange={handleChange}
           required
         />
-
         <button type="submit">Entrar</button>
       </form>
     </div>

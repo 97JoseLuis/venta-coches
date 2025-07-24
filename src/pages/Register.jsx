@@ -6,36 +6,45 @@ import { AuthContext } from '../context/AuthContext';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Register = () => {
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rol, setRol] = useState('usuario');
-  const [adminKey, setAdminKey] = useState('');
+  const [form, setForm] = useState({
+    nombre: '',
+    email: '',
+    password: '',
+    rol: 'usuario',
+    adminKey: '',
+  });
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const { nombre, email, password, rol, adminKey } = form;
+
     if (!nombre || !email || !password) {
-      setError('Por favor, completa todos los campos.');
+      setError('Por favor, completa todos los campos obligatorios.');
       return;
     }
 
     try {
-      // Registro con rol y clave si aplica
+      // Registrar usuario
       await axios.post(`${API_URL}/api/usuarios/registro`, {
         nombre,
         email,
         password,
         rol,
-        adminKey,
+        adminKey: rol === 'admin' ? adminKey : undefined,
       });
 
-      // Login automático
+      // Login automático tras registro
       const res = await axios.post(`${API_URL}/api/usuarios/login`, {
         email,
         password,
@@ -46,14 +55,11 @@ const Register = () => {
       setError('');
 
       setTimeout(() => {
-        if (res.data.usuario.rol === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/');
-        }
+        navigate(res.data.usuario.rol === 'admin' ? '/admin' : '/');
       }, 1000);
     } catch (err) {
-      setError(err.response?.data?.mensaje || 'Error al registrar');
+      const msg = err.response?.data?.mensaje || 'Error al registrar usuario';
+      setError(msg);
       setMensaje('');
     }
   };
@@ -61,40 +67,48 @@ const Register = () => {
   return (
     <div className="register-container">
       <h2>Crear cuenta en AutoClick</h2>
-      {mensaje && <p className="mensaje" style={{ color: 'green' }}>{mensaje}</p>}
-      {error && <p className="mensaje" style={{ color: 'red' }}>{error}</p>}
+      {mensaje && <p className="mensaje success">{mensaje}</p>}
+      {error && <p className="mensaje error">{error}</p>}
 
       <form className="register-form" onSubmit={handleSubmit}>
         <input
           type="text"
+          name="nombre"
           placeholder="Nombre"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          value={form.nombre}
+          onChange={handleChange}
+          required
         />
         <input
           type="email"
+          name="email"
           placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={form.email}
+          onChange={handleChange}
+          required
         />
         <input
           type="password"
+          name="password"
           placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={form.password}
+          onChange={handleChange}
+          required
         />
 
-        <select value={rol} onChange={(e) => setRol(e.target.value)}>
+        <select name="rol" value={form.rol} onChange={handleChange}>
           <option value="usuario">Usuario</option>
           <option value="admin">Administrador</option>
         </select>
 
-        {rol === 'admin' && (
+        {form.rol === 'admin' && (
           <input
             type="text"
+            name="adminKey"
             placeholder="Clave secreta de administrador"
-            value={adminKey}
-            onChange={(e) => setAdminKey(e.target.value)}
+            value={form.adminKey}
+            onChange={handleChange}
+            required
           />
         )}
 

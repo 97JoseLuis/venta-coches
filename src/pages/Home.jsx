@@ -18,6 +18,7 @@ const Home = () => {
         setTodosLosCoches(cochesData);
         setOpcionesFiltro(opciones);
       } catch (error) {
+        console.error('Error cargando coches:', error);
       }
     };
 
@@ -43,13 +44,11 @@ const Home = () => {
 
   return (
     <div className="autoclick-home">
-      {/* Hero/banner */}
       <div className="hero-banner">
         <h1>Bienvenido a AutoClickCar</h1>
         <p>Tu plataforma para comprar y vender coches de segunda mano</p>
       </div>
 
-      {/* Buscador */}
       <div className="hero-layout">
         <div className="video-hero">
           <video autoPlay muted loop playsInline>
@@ -93,7 +92,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Listado de coches */}
       <div className="coches-listado">
         <h2>Coches disponibles</h2>
         <div className="coches-grid">
@@ -101,10 +99,13 @@ const Home = () => {
             <div key={coche._id} className="coche-card">
               <div className="imagen-container">
                 <img
-                  src={`${import.meta.env.VITE_API_URL}${coche.imagen}`}
+                  src={
+                    coche.imagen?.startsWith('http')
+                      ? coche.imagen
+                      : `${import.meta.env.VITE_API_URL}${coche.imagen}`
+                  }
                   alt={`${coche.marca} ${coche.modelo}`}
                 />
-                {/* Mostrar cartel si el coche está reservado o vendido */}
                 {coche.estado && coche.estado !== 'disponible' && (
                   <span className={`estado-etiqueta ${coche.estado}`}>
                     {coche.estado.toUpperCase()}

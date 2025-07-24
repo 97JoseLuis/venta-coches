@@ -1,32 +1,42 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
+import jwtDecode from 'jwt-decode';
 
-// Creamos el contexto de autenticación
 export const AuthContext = createContext();
 
-// Proveedor del contexto
 export const AuthProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
 
-  // Al cargar la app, recuperamos el usuario desde localStorage
+  // Cargar usuario desde localStorage al iniciar
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const usuarioGuardado = localStorage.getItem('usuario');
-    if (usuarioGuardado) {
-      setUsuario(JSON.parse(usuarioGuardado));
+
+    if (token && usuarioGuardado) {
+      try {
+        const decodificado = jwtDecode(token);
+        if (decodificado.exp * 1000 > Date.now()) {
+          setUsuario(JSON.parse(usuarioGuardado));
+        } else {
+          logout();
+        }
+      } catch (e) {
+        logout();
+      }
     }
   }, []);
 
-  // Función para iniciar sesión
-  const login = (usuario, token) => {
-    setUsuario(usuario);
+  // Iniciar sesión (guardar en localStorage)
+  const login = (token, usuario) => {
     localStorage.setItem('token', token);
     localStorage.setItem('usuario', JSON.stringify(usuario));
+    setUsuario(usuario);
   };
 
-  // Función para cerrar sesión
+  // Cerrar sesión
   const logout = () => {
-    setUsuario(null);
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
+    setUsuario(null);
   };
 
   return (
