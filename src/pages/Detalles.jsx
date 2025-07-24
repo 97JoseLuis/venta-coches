@@ -95,7 +95,11 @@ const Detalles = () => {
 
       <div className="detalle-imagen-container">
         <img
-          src={coche.imagen}
+          src={
+            coche.imagen?.startsWith('http')
+              ? coche.imagen
+              : `${import.meta.env.VITE_API_URL}${coche.imagen}`
+          }
           alt={`${coche.marca} ${coche.modelo}`}
         />
 
