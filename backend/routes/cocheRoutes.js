@@ -62,14 +62,24 @@ router.post(
   upload.single('imagen'),
   async (req, res, next) => {
     try {
-      const imagenUrl = req.file?.path || ''; // URL de Cloudinary
+      if (!req.usuario?.id) {
+        return res.status(401).json({ mensaje: 'No se pudo obtener el usuario autenticado' });
+      }
+
+      const { marca, modelo, anio, precio, descripcion } = req.body;
+
+      if (!marca || !modelo || !anio || !precio || !descripcion) {
+        return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
+      }
+
+      const imagenUrl = req.file?.path || '';
 
       const nuevoCoche = new Coche({
-        marca: req.body.marca,
-        modelo: req.body.modelo,
-        anio: req.body.anio,
-        precio: req.body.precio,
-        descripcion: req.body.descripcion,
+        marca,
+        modelo,
+        anio,
+        precio,
+        descripcion,
         estado: 'disponible',
         imagen: imagenUrl,
         userId: req.usuario.id,

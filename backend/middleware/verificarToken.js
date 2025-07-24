@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const verificarToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  // Verificamos si se proporcionó el token con el prefijo 'Bearer '
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ mensaje: 'Token no proporcionado o inválido' });
   }
@@ -15,11 +14,20 @@ const verificarToken = (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
-    // Verificamos y decodificamos el token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded?.id) {
+      return res.status(401).json({ mensaje: 'Token válido pero sin ID de usuario' });
+    }
+
     req.usuario = { id: decoded.id };
+
+    // Para depuración segura (quítalo si no lo necesitas después)
+    console.log('Usuario autenticado:', req.usuario);
+
     next();
   } catch (error) {
+    console.error('Error al verificar token:', error.message);
     return res.status(401).json({ mensaje: 'Token inválido o expirado' });
   }
 };
