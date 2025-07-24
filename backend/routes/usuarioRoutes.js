@@ -18,7 +18,17 @@ router.post('/registro', validarRegistro, manejarErroresDeValidacion, async (req
     const nuevoUsuario = new Usuario({ nombre, email, password });
     await nuevoUsuario.save();
 
-    const token = jwt.sign({ id: nuevoUsuario._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign(
+  {
+    id: nuevoUsuario._id,
+    nombre: nuevoUsuario.nombre,
+    email: nuevoUsuario.email,
+    rol: nuevoUsuario.rol
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: '7d' }
+);
+
 
     res.status(201).json({
       token,
@@ -49,7 +59,16 @@ router.post('/login', validarLogin, manejarErroresDeValidacion, async (req, res)
       return res.status(400).json({ mensaje: 'Credenciales inválidas' });
     }
 
-    const token = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign(
+  {
+    id: usuario._id,
+    nombre: usuario.nombre,
+    email: usuario.email,
+    rol: usuario.rol  // <- asegúrate de incluir esto si tienes roles
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: '7d' }
+);
 
     res.json({
       token,
