@@ -53,7 +53,7 @@ const AdminPanel = () => {
         <>
           <section>
             <h3>Usuarios registrados</h3>
-            <table>
+            <table className="tabla-usuarios">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -64,9 +64,9 @@ const AdminPanel = () => {
               <tbody>
                 {usuarios.map((usuario) => (
                   <tr key={usuario._id}>
-                    <td>{usuario.nombre}</td>
-                    <td>{usuario.email}</td>
-                    <td>{usuario.rol || 'usuario'}</td>
+                    <td data-label="Nombre">{usuario.nombre}</td>
+                    <td data-label="Email">{usuario.email}</td>
+                    <td data-label="Rol">{usuario.rol || 'usuario'}</td>
                   </tr>
                 ))}
               </tbody>

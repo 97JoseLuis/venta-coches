@@ -761,3 +761,60 @@ ul li {
     margin: 0 auto;
   }
 }
+
+/* ------------------ TABLA USUARIOS RESPONSIVE ------------------ */
+.tabla-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .tabla-usuarios thead {
+    display: none;
+  }
+
+  .tabla-usuarios,
+  .tabla-usuarios tbody,
+  .tabla-usuarios tr,
+  .tabla-usuarios td {
+    display: block;
+    width: 100%;
+  }
+
+  .tabla-usuarios tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  .tabla-usuarios td {
+    position: relative;
+    padding-left: 50%;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .tabla-usuarios td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    font-weight: bold;
+    color: #555;
+  }
+
+  .tabla-usuarios td:last-child {
+    border-bottom: none;
+  }
+}
