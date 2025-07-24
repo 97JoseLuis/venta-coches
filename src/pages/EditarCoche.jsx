@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { getCocheById, actualizarEstadoCoche } from '../services/cocheService';
 
 const EditarCoche = () => {
@@ -32,17 +33,10 @@ const EditarCoche = () => {
     const cargarCoche = async () => {
       try {
         const data = await getCocheById(id);
-
-        // 🔧 CORREGIDO: comparación robusta del ID
         const userId = String(usuario?._id || usuario?.id);
-        const ownerId =
-          typeof data.userId === 'object' && data.userId !== null
-            ? String(data.userId._id || data.userId.id)
-            : String(data.userId);
-
-        console.log('🟢 Usuario logueado ID:', userId);
-        console.log('🟢 ID del propietario del coche:', ownerId);
-        console.log('🟢 Es propietario:', userId === ownerId);
+        const ownerId = typeof data.userId === 'object'
+          ? String(data.userId._id || data.userId.id)
+          : String(data.userId);
 
         if (!usuario || userId !== ownerId) {
           alert('No tienes permisos para editar este coche.');
@@ -98,45 +92,48 @@ const EditarCoche = () => {
 
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
-
     if (name === 'imagen') {
       setFormulario({ ...formulario, imagen: files[0] });
     } else {
-      const nuevoValor = type === 'number' ? value : value;
-      setFormulario({ ...formulario, [name]: nuevoValor });
+      setFormulario({ ...formulario, [name]: value });
     }
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validar()) {
-    alert('Por favor, corrige los errores en el formulario antes de continuar.');
-    return;
-  }
-
-  try {
-    const formData = new FormData();
-    formData.append('marca', formulario.marca);
-    formData.append('modelo', formulario.modelo);
-    formData.append('anio', formulario.anio);
-    formData.append('precio', formulario.precio);
-    formData.append('descripcion', formulario.descripcion);
-    if (formulario.imagen) {
-      formData.append('imagen', formulario.imagen);
+    e.preventDefault();
+    if (!validar()) {
+      alert('Por favor, corrige los errores en el formulario antes de continuar.');
+      return;
     }
 
-    await actualizarEstadoCoche(id, formData, token);
-    navigate(`/detalles/${id}`);
-  } catch (error) {
-    alert('Error al actualizar el coche');
-    console.error('Detalles del error:', error);
-  }
-};
+    try {
+      const formData = new FormData();
+      formData.append('marca', formulario.marca);
+      formData.append('modelo', formulario.modelo);
+      formData.append('anio', formulario.anio);
+      formData.append('precio', formulario.precio);
+      formData.append('descripcion', formulario.descripcion);
+      if (formulario.imagen) {
+        formData.append('imagen', formulario.imagen);
+      }
+
+      await actualizarEstadoCoche(id, formData, token);
+      navigate(`/detalles/${id}`);
+    } catch (error) {
+      alert('Error al actualizar el coche');
+      console.error('Detalles del error:', error);
+    }
+  };
 
   if (loading) return <p>Cargando datos del coche...</p>;
 
   return (
     <div className="editar-coche-container">
+      <Helmet>
+        <title>Editar coche - AutoClickCar</title>
+        <meta name="description" content="Edita los datos del vehículo publicado en AutoClickCar." />
+      </Helmet>
+
       <h2>Editar coche</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <label>

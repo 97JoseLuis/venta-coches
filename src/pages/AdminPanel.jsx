@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Helmet } from 'react-helmet-async';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -45,6 +46,11 @@ const AdminPanel = () => {
 
   return (
     <div className="admin-panel">
+      <Helmet>
+        <title>Panel de Administración - AutoClickCar</title>
+        <meta name="description" content="Sección exclusiva para administradores donde puedes gestionar usuarios y coches publicados." />
+      </Helmet>
+
       <h2>Panel de Administración</h2>
 
       {error && <p className="error">{error}</p>}

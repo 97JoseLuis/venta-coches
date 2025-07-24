@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { crearCoche } from '../services/cocheService';
 
 const VenderCoche = () => {
@@ -15,20 +16,19 @@ const VenderCoche = () => {
   });
 
   const handleChange = (e) => {
-  const { name, value, files } = e.target;
-  if (name === 'imagen') {
-    setFormulario({ ...formulario, imagen: files[0] });
-  } else {
-    setFormulario({ ...formulario, [name]: value });
-  }
-};
+    const { name, value, files } = e.target;
+    if (name === 'imagen') {
+      setFormulario({ ...formulario, imagen: files[0] });
+    } else {
+      setFormulario({ ...formulario, [name]: value });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const formData = new FormData();
-
       formData.append('marca', formulario.marca);
       formData.append('modelo', formulario.modelo);
       formData.append('anio', formulario.anio);
@@ -39,7 +39,6 @@ const VenderCoche = () => {
       }
 
       await crearCoche(formData);
-
       alert('Coche publicado correctamente');
       navigate('/');
     } catch (error) {
@@ -50,6 +49,14 @@ const VenderCoche = () => {
 
   return (
     <div className="vender-container">
+      <Helmet>
+        <title>Publicar coche - AutoClickCar</title>
+        <meta
+          name="description"
+          content="Publica un nuevo coche de segunda mano en AutoClickCar. Rápido, fácil y seguro."
+        />
+      </Helmet>
+
       <h2>Publicar un nuevo coche</h2>
       <form onSubmit={handleSubmit}>
         <label>

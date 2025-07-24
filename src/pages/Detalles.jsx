@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+import { Helmet } from 'react-helmet-async';
 
 const Detalles = () => {
   const { id } = useParams();
@@ -11,24 +12,17 @@ const Detalles = () => {
   const [coche, setCoche] = useState(null);
   const [mostrarContacto, setMostrarContacto] = useState(false);
 
- const esPropietario = useMemo(() => {
-  if (!user || !coche?.userId) return false;
+  const esPropietario = useMemo(() => {
+    if (!user || !coche?.userId) return false;
 
-  const userId = String(user._id || user.id);
-  const ownerId =
-    typeof coche.userId === 'object'
-      ? String(coche.userId._id || coche.userId.id)
-      : String(coche.userId);
+    const userId = String(user._id || user.id);
+    const ownerId =
+      typeof coche.userId === 'object'
+        ? String(coche.userId._id || coche.userId.id)
+        : String(coche.userId);
 
-  const esPropio = ownerId === userId;
-
-  console.log('🟩 Usuario logueado ID:', userId);
-  console.log('🟩 ID del propietario del coche:', ownerId);
-  console.log('🟩 Es propietario:', esPropio);
-
-  return esPropio;
-}, [user, coche]);
-
+    return ownerId === userId;
+  }, [user, coche]);
 
   useEffect(() => {
     const obtenerCoche = async () => {
@@ -91,6 +85,11 @@ const Detalles = () => {
 
   return (
     <div className="detalles-container">
+      <Helmet>
+        <title>{`${coche.marca} ${coche.modelo} - AutoClickCar`}</title>
+        <meta name="description" content={`Detalles del ${coche.marca} ${coche.modelo}, año ${coche.anio}, precio ${coche.precio} €`} />
+      </Helmet>
+
       <h1>{coche.marca} {coche.modelo}</h1>
 
       <div className="detalle-imagen-container">

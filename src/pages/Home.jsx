@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getCoches, getOpcionesFiltro } from '../services/cocheService';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 const Home = () => {
   const [coches, setCoches] = useState([]);
@@ -44,6 +45,11 @@ const Home = () => {
 
   return (
     <div className="autoclick-home">
+      <Helmet>
+        <title>Inicio | AutoClickCar</title>
+        <meta name="description" content="Explora y filtra coches disponibles para comprar o vender en AutoClickCar." />
+      </Helmet>
+
       <div className="hero-banner">
         <h1>Bienvenido a AutoClickCar</h1>
         <p>Tu plataforma para comprar y vender coches de segunda mano</p>

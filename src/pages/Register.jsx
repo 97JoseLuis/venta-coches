@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { Helmet } from 'react-helmet-async';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -35,7 +36,7 @@ const Register = () => {
     }
 
     try {
-      // Registrar usuario
+      // Registro
       await axios.post(`${API_URL}/api/usuarios/registro`, {
         nombre,
         email,
@@ -44,7 +45,7 @@ const Register = () => {
         adminKey: rol === 'admin' ? adminKey : undefined,
       });
 
-      // Login automático tras registro
+      // Login automático
       const res = await axios.post(`${API_URL}/api/usuarios/login`, {
         email,
         password,
@@ -66,6 +67,11 @@ const Register = () => {
 
   return (
     <div className="register-container">
+      <Helmet>
+        <title>Registro | AutoClickCar</title>
+        <meta name="description" content="Crea una cuenta para empezar a vender y comprar coches en AutoClickCar." />
+      </Helmet>
+
       <h2>Crear cuenta en AutoClick</h2>
       {mensaje && <p className="mensaje success">{mensaje}</p>}
       {error && <p className="mensaje error">{error}</p>}

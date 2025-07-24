@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { Helmet } from 'react-helmet-async';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -52,6 +53,11 @@ const Login = () => {
 
   return (
     <div className="login-container">
+      <Helmet>
+        <title>Iniciar sesión | AutoClickCar</title>
+        <meta name="description" content="Inicia sesión para acceder a tu cuenta y administrar tus anuncios de coches." />
+      </Helmet>
+
       <h2>Iniciar sesión</h2>
 
       {mensaje && <p className="mensaje success">{mensaje}</p>}
