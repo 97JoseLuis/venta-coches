@@ -11,27 +11,24 @@ const Detalles = () => {
   const [coche, setCoche] = useState(null);
   const [mostrarContacto, setMostrarContacto] = useState(false);
 
-  const esPropietario = useMemo(() => {
-    if (!user || !coche?.userId) return false;
+ const esPropietario = useMemo(() => {
+  if (!user || !coche?.userId) return false;
 
-    // 🧠 Extraer correctamente el ID del propietario
-    let cocheOwnerId = '';
-    if (typeof coche.userId === 'string') {
-      cocheOwnerId = coche.userId;
-    } else if (typeof coche.userId._id === 'string') {
-      cocheOwnerId = coche.userId._id;
-    } else {
-      cocheOwnerId = String(coche.userId);
-    }
+  const userId = String(user._id || user.id);
+  const ownerId =
+    typeof coche.userId === 'object'
+      ? String(coche.userId._id || coche.userId.id)
+      : String(coche.userId);
 
-    const usuarioId = String(user._id || user.id);
+  const esPropio = ownerId === userId;
 
-    console.log('✅ Usuario logueado ID:', usuarioId);
-    console.log('✅ Propietario del coche ID:', cocheOwnerId);
-    console.log('✅ Es propietario:', cocheOwnerId === usuarioId);
+  console.log('🟩 Usuario logueado ID:', userId);
+  console.log('🟩 ID del propietario del coche:', ownerId);
+  console.log('🟩 Es propietario:', esPropio);
 
-    return cocheOwnerId === usuarioId;
-  }, [user, coche]);
+  return esPropio;
+}, [user, coche]);
+
 
   useEffect(() => {
     const obtenerCoche = async () => {
