@@ -18,7 +18,7 @@ const ListadoCoches = () => {
     try {
       const token = localStorage.getItem('token');
       await eliminarCoche(id, token);
-      cargarCoches(); // refrescar la lista
+      cargarCoches();
     } catch (err) {
       alert('No se pudo eliminar el coche');
     }
@@ -30,9 +30,13 @@ const ListadoCoches = () => {
 
   return (
     <div className="listado-coches">
-      {coches.map((coche) => (
-        <CocheCard key={coche._id} coche={coche} onEliminar={handleEliminar} />
-      ))}
+      {coches.length === 0 ? (
+        <p>No hay coches disponibles en este momento.</p>
+      ) : (
+        coches.map((coche) => (
+          <CocheCard key={coche._id} coche={coche} onEliminar={handleEliminar} />
+        ))
+      )}
     </div>
   );
 };

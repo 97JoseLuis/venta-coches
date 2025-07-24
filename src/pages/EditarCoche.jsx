@@ -108,20 +108,30 @@ const EditarCoche = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validar()) {
-      alert('Por favor, corrige los errores en el formulario antes de continuar.');
-      return;
+  e.preventDefault();
+  if (!validar()) {
+    alert('Por favor, corrige los errores en el formulario antes de continuar.');
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('marca', formulario.marca);
+    formData.append('modelo', formulario.modelo);
+    formData.append('anio', formulario.anio);
+    formData.append('precio', formulario.precio);
+    formData.append('descripcion', formulario.descripcion);
+    if (formulario.imagen) {
+      formData.append('imagen', formulario.imagen);
     }
 
-    try {
-      await actualizarEstadoCoche(id, formulario, token);
-      navigate(`/detalles/${id}`);
-    } catch (error) {
-      alert('Error al actualizar el coche');
-      console.error('Detalles del error:', error);
-    }
-  };
+    await actualizarEstadoCoche(id, formData, token);
+    navigate(`/detalles/${id}`);
+  } catch (error) {
+    alert('Error al actualizar el coche');
+    console.error('Detalles del error:', error);
+  }
+};
 
   if (loading) return <p>Cargando datos del coche...</p>;
 

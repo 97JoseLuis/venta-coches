@@ -8,7 +8,7 @@ const verificarToken = require('../middleware/verificarToken');
 
 // Cloudinary + Multer setup
 const multer = require('multer');
-const { storage } = require('../config/cloudinary'); // Asegúrate de tener este archivo
+const { storage } = require('../config/cloudinary');
 const upload = multer({ storage });
 
 // ───────────────────────────────────────────────
@@ -103,11 +103,12 @@ router.put('/:id', verificarToken, upload.single('imagen'), async (req, res, nex
     if (String(coche.userId) !== String(req.usuario.id))
       return res.status(403).json({ mensaje: 'No autorizado para editar este coche' });
 
-    coche.marca = req.body.marca || coche.marca;
-    coche.modelo = req.body.modelo || coche.modelo;
-    coche.anio = req.body.anio || coche.anio;
-    coche.precio = req.body.precio || coche.precio;
-    coche.descripcion = req.body.descripcion || coche.descripcion;
+    // 👇 Corrección aplicada aquí
+    if (req.body.marca !== undefined) coche.marca = req.body.marca;
+    if (req.body.modelo !== undefined) coche.modelo = req.body.modelo;
+    if (req.body.anio !== undefined) coche.anio = req.body.anio;
+    if (req.body.precio !== undefined) coche.precio = req.body.precio;
+    if (req.body.descripcion !== undefined) coche.descripcion = req.body.descripcion;
 
     if (req.file) {
       coche.imagen = req.file.path;

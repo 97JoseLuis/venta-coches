@@ -21,26 +21,20 @@ export const getCocheById = async (id) => {
 };
 
 // Crear nuevo coche (con FormData e imagen)
-export const crearCoche = async (formulario) => {
+export const crearCoche = async (formData) => {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No tienes token');
 
-  const formData = new FormData();
-  formData.append('marca', formulario.marca);
-  formData.append('modelo', formulario.modelo);
-  formData.append('anio', formulario.anio);
-  formData.append('precio', formulario.precio);
-  formData.append('descripcion', formulario.descripcion);
-
-  if (formulario.imagen) {
-    formData.append('imagen', formulario.imagen);
-  }
-
-  const response = await axios.post(`${API_URL}/api/coches`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axios.post(
+    `${API_URL}/api/coches`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
 
   return response.data;
 };
