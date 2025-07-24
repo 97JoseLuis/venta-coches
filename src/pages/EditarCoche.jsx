@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getCocheById, actualizarEstadoCoche } from '../services/cocheService';
+import { getCocheById, actualizarCoche } from '../services/cocheService';
 
 const EditarCoche = () => {
   const { id } = useParams();
@@ -34,6 +34,10 @@ const EditarCoche = () => {
         const data = await getCocheById(id);
 
         const cocheUserId = data.userId?._id || data.userId;
+
+        console.log('Usuario logueado:', usuario);
+        console.log('ID del coche:', cocheUserId);
+        console.log('Comparación:', String(usuario.id), '===', String(cocheUserId));
 
         if (!usuario || String(usuario.id) !== String(cocheUserId)) {
           alert('No tienes permisos para editar este coche.');
@@ -106,7 +110,7 @@ const EditarCoche = () => {
     }
 
     try {
-      await actualizarEstadoCoche(id, formulario, token);
+      await actualizarCoche(id, formulario, token);
       navigate(`/detalles/${id}`);
     } catch (error) {
       alert('Error al actualizar el coche');

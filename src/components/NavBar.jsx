@@ -1,22 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const NavBar = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [usuario, setUsuario] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const usuarioGuardado = localStorage.getItem('usuario');
-    if (usuarioGuardado) {
-      setUsuario(JSON.parse(usuarioGuardado));
-    }
-  }, []);
+  const { usuario, logout } = useContext(AuthContext);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
-    setUsuario(null);
+    logout(); // esto ya limpia localStorage y contexto
     navigate('/login');
   };
 

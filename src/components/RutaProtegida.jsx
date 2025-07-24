@@ -1,14 +1,34 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 /**
  * RutaProtegida
- * Comprueba si hay un token en localStorage. Si no, redirige al login.
+ * Protege rutas privadas validando token y su expiración.
  */
 const RutaProtegida = ({ children }) => {
   const token = localStorage.getItem('token');
 
-  return token ? children : <Navigate to="/login" />;
+  if (!token) return <Navigate to="/login" />;
+
+  try {
+    const decoded = jwtDecode(token);
+    const ahora = Date.now() / 1000;
+
+    if (decoded.exp < ahora) {
+      // Token expirado
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      return <Navigate to="/login" />;
+    }
+
+    return children;
+  } catch (error) {
+    // Token corrupto o inválido
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    return <Navigate to="/login" />;
+  }
 };
 
 export default RutaProtegida;

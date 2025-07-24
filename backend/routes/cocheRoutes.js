@@ -90,9 +90,8 @@ router.put('/:id', verificarToken, upload.single('imagen'), async (req, res, nex
     const coche = await Coche.findById(req.params.id);
     if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
 
-    if (String(coche.userId) !== req.usuario.id) {
+    if (String(coche.userId) !== String(req.usuario.id))
       return res.status(403).json({ mensaje: 'No autorizado para editar este coche' });
-    }
 
     coche.marca = req.body.marca || coche.marca;
     coche.modelo = req.body.modelo || coche.modelo;

@@ -15,7 +15,12 @@ export const AuthProvider = ({ children }) => {
       try {
         const decodificado = jwtDecode(token);
         if (decodificado.exp * 1000 > Date.now()) {
-          setUsuario(JSON.parse(usuarioGuardado));
+          const parsed = JSON.parse(usuarioGuardado);
+          const usuarioFinal = {
+            ...parsed,
+            _id: parsed._id || parsed.id, // ✅ Asegura _id esté disponible
+          };
+          setUsuario(usuarioFinal);
         } else {
           logout();
         }
@@ -27,9 +32,13 @@ export const AuthProvider = ({ children }) => {
 
   // Iniciar sesión (guardar en localStorage)
   const login = (token, usuario) => {
+    const usuarioFinal = {
+      ...usuario,
+      _id: usuario._id || usuario.id, // ✅ Normaliza el ID
+    };
     localStorage.setItem('token', token);
-    localStorage.setItem('usuario', JSON.stringify(usuario));
-    setUsuario(usuario);
+    localStorage.setItem('usuario', JSON.stringify(usuarioFinal));
+    setUsuario(usuarioFinal);
   };
 
   // Cerrar sesión

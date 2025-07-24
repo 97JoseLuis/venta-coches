@@ -33,7 +33,24 @@ const registrarUsuario = async (req, res, next) => {
     });
 
     const guardado = await nuevoUsuario.save();
-    res.status(201).json(guardado);
+
+    // Crear token
+    const token = jwt.sign(
+      { id: guardado._id, rol: guardado.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: '3h' }
+    );
+
+    // Devolver datos limpios
+    res.status(201).json({
+      token,
+      usuario: {
+        id: guardado._id.toString(), 
+        nombre: guardado.nombre,
+        email: guardado.email,
+        rol: guardado.rol,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -60,7 +77,15 @@ const loginUsuario = async (req, res, next) => {
       { expiresIn: '3h' }
     );
 
-    res.json({ token, usuario });
+    res.json({
+      token,
+      usuario: {
+        id: usuario._id.toString(), // 
+        nombre: usuario.nombre,
+        email: usuario.email,
+        rol: usuario.rol,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -75,7 +100,6 @@ const obtenerUsuarios = async (req, res, next) => {
   }
 };
 
-// Exportamos las funciones
 module.exports = {
   registrarUsuario,
   loginUsuario,

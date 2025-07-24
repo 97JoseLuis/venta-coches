@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const usuarioSchema = new mongoose.Schema({
+// Definición del esquema de Usuario
+
+const usuarioSchema = new mongoose.Schema({ 
   nombre: {
     type: String,
     required: true,
@@ -11,18 +13,33 @@ const usuarioSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    lowercase: true,
+    lowercase: true, 
     trim: true,
   },
   password: {
     type: String,
     required: true,
   },
+  rol: {
+    type: String,
+    enum: ['usuario', 'admin'],
+    default: 'usuario',
+  },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (_, ret) => {
+      ret.id = ret._id.toString(); 
+      delete ret._id;
+      delete ret.__v;
+      delete ret.password;
+      return ret;
+    },
+  },
 });
 
-// Middleware para encriptar contraseña antes de guardar
+// Encriptar contraseña si fue modificada
 usuarioSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
@@ -35,7 +52,7 @@ usuarioSchema.pre('save', async function (next) {
   }
 });
 
-// Método para comparar contraseñas en el login
+// Método para comparar contraseñas
 usuarioSchema.methods.compararPassword = function (passwordIngresada) {
   return bcrypt.compare(passwordIngresada, this.password);
 };

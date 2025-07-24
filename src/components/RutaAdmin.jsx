@@ -1,19 +1,36 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 /**
  * RutaAdmin
- * Protege rutas que solo deben ser accesibles por usuarios con rol admin
+ * Solo permite acceso a usuarios con rol 'admin' y sesión activa.
  */
 const RutaAdmin = ({ children }) => {
+  const token = localStorage.getItem('token');
   const usuarioJSON = localStorage.getItem('usuario');
-  const usuario = usuarioJSON ? JSON.parse(usuarioJSON) : null;
 
-  if (!usuario || usuario.rol !== 'admin') {
-    return <Navigate to="/" />;
+  if (!token || !usuarioJSON) return <Navigate to="/login" />;
+
+  try {
+    const decoded = jwtDecode(token);
+    const ahora = Date.now() / 1000;
+
+    if (decoded.exp < ahora) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      return <Navigate to="/login" />;
+    }
+
+    const usuario = JSON.parse(usuarioJSON);
+    if (usuario.rol !== 'admin') return <Navigate to="/" />;
+
+    return children;
+  } catch (err) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    return <Navigate to="/login" />;
   }
-
-  return children;
 };
 
 export default RutaAdmin;
