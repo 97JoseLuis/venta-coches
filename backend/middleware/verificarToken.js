@@ -20,11 +20,9 @@ const verificarToken = (req, res, next) => {
       return res.status(401).json({ mensaje: 'Token válido pero sin ID de usuario' });
     }
 
-    req.usuario = { id: decoded.id };
+    req.usuario = decoded; // Incluye también el rol
 
-    // Para depuración segura (quítalo si no lo necesitas después)
-    console.log('Usuario autenticado:', req.usuario);
-
+    console.log('Usuario autenticado:', req.usuario); // Opcional
     next();
   } catch (error) {
     console.error('Error al verificar token:', error.message);

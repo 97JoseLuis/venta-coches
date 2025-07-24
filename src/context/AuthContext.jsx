@@ -14,12 +14,17 @@ export const AuthProvider = ({ children }) => {
     if (token && usuarioGuardado) {
       try {
         const decodificado = jwtDecode(token);
+
+        // Verifica expiración del token
         if (decodificado.exp * 1000 > Date.now()) {
           const parsed = JSON.parse(usuarioGuardado);
+
           const usuarioFinal = {
             ...parsed,
-            _id: parsed._id || parsed.id, // Asegura _id esté disponible
+            _id: parsed._id || parsed.id,
+            rol: parsed.rol || decodificado.rol || 'usuario', // ✅ asegura rol
           };
+
           setUsuario(usuarioFinal);
         } else {
           logout();
@@ -30,12 +35,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Iniciar sesión (guardar en localStorage)
+  // Iniciar sesión y guardar datos
   const login = (token, usuario) => {
     const usuarioFinal = {
       ...usuario,
-      _id: usuario._id || usuario.id, // Normaliza el ID
+      _id: usuario._id || usuario.id,
+      rol: usuario.rol || 'usuario', // ✅ asegura rol siempre esté
     };
+
     localStorage.setItem('token', token);
     localStorage.setItem('usuario', JSON.stringify(usuarioFinal));
     setUsuario(usuarioFinal);
