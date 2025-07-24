@@ -32,7 +32,7 @@ const Login = () => {
         password: form.password,
       });
 
-      login(res.data.usuario, res.data.token);
+      login(res.data.token, res.data.usuario);
       setMensaje('Inicio de sesión exitoso. Redirigiendo...');
       setError('');
 

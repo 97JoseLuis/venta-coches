@@ -50,7 +50,7 @@ const Register = () => {
         password,
       });
 
-      login(res.data.usuario, res.data.token);
+      login(res.data.token, res.data.usuario);
       setMensaje('Registro exitoso. Redirigiendo...');
       setError('');
 
