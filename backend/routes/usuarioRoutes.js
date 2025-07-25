@@ -4,7 +4,8 @@ const Usuario = require('../models/usuario');
 const jwt = require('jsonwebtoken');
 const { validarRegistro, validarLogin } = require('../middleware/validaciones');
 const manejarErroresDeValidacion = require('../middleware/manejoValidaciones');
-const verificarToken = require('../middleware/verificarToken'); // Asegúrate de importar esto
+const verificarToken = require('../middleware/verificarToken');
+const verificarAdmin = require('../middleware/verificarAdmin');
 
 // Registro de usuario
 router.post('/registro', validarRegistro, manejarErroresDeValidacion, async (req, res) => {
