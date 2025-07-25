@@ -12,6 +12,8 @@ const Detalles = () => {
   const [coche, setCoche] = useState(null);
   const [mostrarContacto, setMostrarContacto] = useState(false);
 
+  const esAdmin = user?.rol === 'admin';
+
   const esPropietario = useMemo(() => {
     if (!user || !coche?.userId) return false;
 
@@ -87,7 +89,10 @@ const Detalles = () => {
     <div className="detalles-container">
       <Helmet>
         <title>{`${coche.marca} ${coche.modelo} - AutoClickCar`}</title>
-        <meta name="description" content={`Detalles del ${coche.marca} ${coche.modelo}, año ${coche.anio}, precio ${coche.precio} €`} />
+        <meta
+          name="description"
+          content={`Detalles del ${coche.marca} ${coche.modelo}, año ${coche.anio}, precio ${coche.precio} €`}
+        />
       </Helmet>
 
       <h1>{coche.marca} {coche.modelo}</h1>
@@ -112,7 +117,7 @@ const Detalles = () => {
       <p><strong>Año:</strong> {coche.anio}</p>
       <p><strong>Descripción:</strong> {coche.descripcion}</p>
 
-      {esPropietario && (
+      {(esPropietario || esAdmin) && (
         <div className="detalles-acciones">
           {coche.estado !== 'disponible' && (
             <button onClick={() => cambiarEstado('disponible')}>Disponible</button>
@@ -128,7 +133,7 @@ const Detalles = () => {
         </div>
       )}
 
-      {!esPropietario && (
+      {!esPropietario && !esAdmin && (
         <div className="contacto-anunciante">
           <button onClick={() => setMostrarContacto(!mostrarContacto)}>
             Contactar con el anunciante

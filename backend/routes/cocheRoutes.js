@@ -4,6 +4,7 @@ const path = require('path');
 
 // Modelos y Middlewares
 const Coche = require('../models/coche');
+const Usuario = require('../models/usuario');
 const verificarToken = require('../middleware/verificarToken');
 
 // Cloudinary + Multer setup
@@ -100,10 +101,14 @@ router.put('/:id', verificarToken, upload.single('imagen'), async (req, res, nex
     const coche = await Coche.findById(req.params.id);
     if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
 
-    if (String(coche.userId) !== String(req.usuario.id))
-      return res.status(403).json({ mensaje: 'No autorizado para editar este coche' });
+    const usuario = await Usuario.findById(req.usuario.id);
+    const esAdmin = usuario?.rol === 'admin';
+    const esPropietario = String(coche.userId) === req.usuario.id;
 
-    // 👇 Corrección aplicada aquí
+    if (!esAdmin && !esPropietario) {
+      return res.status(403).json({ mensaje: 'No autorizado para editar este coche' });
+    }
+
     if (req.body.marca !== undefined) coche.marca = req.body.marca;
     if (req.body.modelo !== undefined) coche.modelo = req.body.modelo;
     if (req.body.anio !== undefined) coche.anio = req.body.anio;
@@ -127,14 +132,18 @@ router.put('/:id/estado', verificarToken, async (req, res, next) => {
     const coche = await Coche.findById(req.params.id);
     if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
 
-    if (String(coche.userId) !== req.usuario.id) {
-      return res.status(403).json({ mensaje: 'No autorizado para modificar este coche' });
-    }
-
     const { estado } = req.body;
     const estadosPermitidos = ['disponible', 'reservado', 'vendido'];
     if (!estadosPermitidos.includes(estado)) {
       return res.status(400).json({ mensaje: 'Estado no válido' });
+    }
+
+    // Permitir si es propietario o admin
+    if (
+      String(coche.userId) !== req.usuario.id &&
+      req.usuario.rol !== 'admin'
+    ) {
+      return res.status(403).json({ mensaje: 'No autorizado para modificar este coche' });
     }
 
     coche.estado = estado;
@@ -145,13 +154,18 @@ router.put('/:id/estado', verificarToken, async (req, res, next) => {
   }
 });
 
+
 // DELETE /api/coches/:id
 router.delete('/:id', verificarToken, async (req, res, next) => {
   try {
     const coche = await Coche.findById(req.params.id);
     if (!coche) return res.status(404).json({ mensaje: 'Coche no encontrado' });
 
-    if (String(coche.userId) !== req.usuario.id) {
+    const usuario = await Usuario.findById(req.usuario.id);
+    const esAdmin = usuario?.rol === 'admin';
+    const esPropietario = String(coche.userId) === req.usuario.id;
+
+    if (!esAdmin && !esPropietario) {
       return res.status(403).json({ mensaje: 'No autorizado para eliminar este coche' });
     }
 

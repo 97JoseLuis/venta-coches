@@ -38,7 +38,7 @@ const EditarCoche = () => {
           ? String(data.userId._id || data.userId.id)
           : String(data.userId);
 
-        if (!usuario || userId !== ownerId) {
+        if (!usuario || (userId !== ownerId && usuario.rol !== 'admin')) {
           alert('No tienes permisos para editar este coche.');
           return navigate('/');
         }

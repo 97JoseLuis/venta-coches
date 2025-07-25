@@ -87,12 +87,8 @@ router.post('/login', validarLogin, manejarErroresDeValidacion, async (req, res)
 });
 
 // Obtener todos los usuarios (solo admin)
-router.get('/', verificarToken, async (req, res) => {
+router.get('/', verificarToken, verificarAdmin, async (req, res) => {
   try {
-    if (req.usuario.rol !== 'admin') {
-      return res.status(403).json({ mensaje: 'Acceso denegado. Se requiere rol de administrador.' });
-    }
-
     const usuarios = await Usuario.find().select('-password');
     res.json(usuarios);
   } catch (error) {
