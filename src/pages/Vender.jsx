@@ -6,6 +6,7 @@ import { crearCoche } from '../services/cocheService';
 const VenderCoche = () => {
   const navigate = useNavigate();
 
+  // Estado del formulario para crear un nuevo coche
   const [formulario, setFormulario] = useState({
     marca: '',
     modelo: '',
@@ -15,8 +16,10 @@ const VenderCoche = () => {
     imagen: null,
   });
 
+  // Maneja cambios en los inputs del formulario
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+    // Si el campo es de tipo archivo, se guarda el archivo directamente
     if (name === 'imagen') {
       setFormulario({ ...formulario, imagen: files[0] });
     } else {
@@ -24,10 +27,12 @@ const VenderCoche = () => {
     }
   };
 
+  // Enviar el formulario para crear un coche
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      // Construir los datos a enviar como FormData
       const formData = new FormData();
       formData.append('marca', formulario.marca);
       formData.append('modelo', formulario.modelo);
@@ -38,9 +43,10 @@ const VenderCoche = () => {
         formData.append('imagen', formulario.imagen);
       }
 
+      // Enviar datos al backend
       await crearCoche(formData);
       alert('Coche publicado correctamente');
-      navigate('/');
+      navigate('/'); // Redirigir al inicio tras crear el coche
     } catch (error) {
       console.error('Error al crear coche:', error);
       alert('Error al crear el coche. Verifica que todos los campos estén bien.');
@@ -56,9 +62,9 @@ const VenderCoche = () => {
           content="Publica un nuevo coche de segunda mano en AutoClickCar. Rápido, fácil y seguro."
         />
       </Helmet>
-
       <h2>Publicar un nuevo coche</h2>
       <form onSubmit={handleSubmit}>
+        {/* Campo marca */}
         <label>
           Marca:
           <input
@@ -69,7 +75,7 @@ const VenderCoche = () => {
             required
           />
         </label>
-
+        {/* Campo modelo */}
         <label>
           Modelo:
           <input
@@ -80,7 +86,7 @@ const VenderCoche = () => {
             required
           />
         </label>
-
+        {/* Campo año */}
         <label>
           Año:
           <input
@@ -91,7 +97,7 @@ const VenderCoche = () => {
             required
           />
         </label>
-
+        {/* Campo precio */}
         <label>
           Precio (€):
           <input
@@ -102,7 +108,7 @@ const VenderCoche = () => {
             required
           />
         </label>
-
+        {/* Campo descripción */}
         <label>
           Descripción:
           <textarea
@@ -112,7 +118,7 @@ const VenderCoche = () => {
             required
           />
         </label>
-
+        {/* Campo imagen */}
         <label>
           Imagen:
           <input

@@ -6,24 +6,29 @@ import { Helmet } from 'react-helmet-async';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPanel = () => {
+  // Estado para usuarios, coches y errores
   const [usuarios, setUsuarios] = useState([]);
   const [coches, setCoches] = useState([]);
   const [error, setError] = useState('');
 
+  // Recuperar token y usuario del localStorage
   const token = localStorage.getItem('token');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Verifica que el usuario esté autenticado y sea administrador
     if (!token || !usuario || usuario.rol !== 'admin') {
       setError('Acceso denegado. No autorizado.');
       return;
     }
 
+    // Carga inicial de usuarios y coches
     cargarUsuarios();
     cargarCoches();
   }, []);
 
+  // Obtener lista de usuarios desde la API
   const cargarUsuarios = async () => {
     try {
       const res = await axios.get(`${API_URL}/api/usuarios`, {
@@ -35,6 +40,7 @@ const AdminPanel = () => {
     }
   };
 
+  // Obtener lista de coches desde la API
   const cargarCoches = async () => {
     try {
       const res = await axios.get(`${API_URL}/api/coches`);
@@ -44,6 +50,7 @@ const AdminPanel = () => {
     }
   };
 
+  // Cambiar el estado de un coche (disponible, reservado, vendido)
   const cambiarEstado = async (id, nuevoEstado) => {
     try {
       const res = await axios.put(
@@ -53,6 +60,7 @@ const AdminPanel = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      // Actualiza el estado del coche en el frontend
       setCoches((prev) =>
         prev.map((c) => (c._id === id ? { ...c, estado: res.data.estado } : c))
       );
@@ -62,6 +70,7 @@ const AdminPanel = () => {
     }
   };
 
+  // Eliminar un coche tras confirmación
   const eliminarCoche = async (id) => {
     const confirmar = window.confirm('¿Estás seguro de eliminar este coche?');
     if (!confirmar) return;
@@ -70,6 +79,7 @@ const AdminPanel = () => {
       await axios.delete(`${API_URL}/api/coches/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      // Filtra el coche eliminado del estado
       setCoches((prev) => prev.filter((c) => c._id !== id));
     } catch (err) {
       console.error('Error al eliminar coche:', err);
@@ -89,10 +99,13 @@ const AdminPanel = () => {
 
       <h2>Panel de Administración</h2>
 
+      {/* Mostrar error si existe */}
       {error && <p className="error">{error}</p>}
 
+      {/* Mostrar contenido si no hay error */}
       {!error && (
         <>
+          {/* Sección de usuarios */}
           <section>
             <h3>Usuarios registrados</h3>
             <table className="tabla-usuarios">
@@ -115,6 +128,7 @@ const AdminPanel = () => {
             </table>
           </section>
 
+          {/* Sección de coches */}
           <section>
             <h3>Coches publicados</h3>
             <div className="coches-admin-grid">
@@ -126,10 +140,12 @@ const AdminPanel = () => {
                   <p>Estado: <strong>{coche.estado}</strong></p>
 
                   <div className="acciones-admin">
+                    {/* Botones para cambiar el estado del coche */}
                     <button onClick={() => cambiarEstado(coche._id, 'disponible')}>Disponible</button>
                     <button onClick={() => cambiarEstado(coche._id, 'reservado')}>Reservado</button>
                     <button onClick={() => cambiarEstado(coche._id, 'vendido')}>Vendido</button>
 
+                    {/* Acciones de editar y eliminar */}
                     <Link to={`/editar/${coche._id}`} className="editar-btn">Editar</Link>
                     <button onClick={() => eliminarCoche(coche._id)} className="eliminar-btn">Eliminar</button>
                   </div>

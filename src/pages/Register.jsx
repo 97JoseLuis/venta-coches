@@ -7,45 +7,49 @@ import { Helmet } from 'react-helmet-async';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Register = () => {
+  // Estado del formulario de registro
   const [form, setForm] = useState({
     nombre: '',
     email: '',
     password: '',
-    rol: 'usuario',
-    adminKey: '',
+    rol: 'usuario',     // Valor por defecto
+    adminKey: '',       // Solo se usa si el rol es 'admin'
   });
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login } = useContext(AuthContext); // Para iniciar sesión automáticamente tras el registro
 
+  // Actualiza el estado del formulario al escribir
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const { nombre, email, password, rol, adminKey } = form;
 
+    // Validación básica de campos requeridos
     if (!nombre || !email || !password) {
       setError('Por favor, completa todos los campos obligatorios.');
       return;
     }
 
     try {
-      // Registro
+      // Solicita el registro del nuevo usuario
       await axios.post(`${API_URL}/api/usuarios/registro`, {
         nombre,
         email,
         password,
         rol,
-        adminKey: rol === 'admin' ? adminKey : undefined,
+        adminKey: rol === 'admin' ? adminKey : undefined, // Solo enviar si es admin
       });
 
-      // Login automático
+      // Inicia sesión automáticamente después del registro
       const res = await axios.post(`${API_URL}/api/usuarios/login`, {
         email,
         password,
@@ -55,6 +59,7 @@ const Register = () => {
       setMensaje('Registro exitoso. Redirigiendo...');
       setError('');
 
+      // Redirige según el rol del nuevo usuario
       setTimeout(() => {
         navigate(res.data.usuario.rol === 'admin' ? '/admin' : '/');
       }, 1000);
@@ -73,6 +78,7 @@ const Register = () => {
       </Helmet>
 
       <h2>Crear cuenta en AutoClick</h2>
+      {/* Mensajes de éxito o error */}
       {mensaje && <p className="mensaje success">{mensaje}</p>}
       {error && <p className="mensaje error">{error}</p>}
 
@@ -101,12 +107,12 @@ const Register = () => {
           onChange={handleChange}
           required
         />
-
+        {/* Selección del rol */}
         <select name="rol" value={form.rol} onChange={handleChange}>
           <option value="usuario">Usuario</option>
           <option value="admin">Administrador</option>
         </select>
-
+        {/* Campo adicional para clave de admin, solo si se selecciona ese rol */}
         {form.rol === 'admin' && (
           <input
             type="text"
@@ -117,7 +123,6 @@ const Register = () => {
             required
           />
         )}
-
         <button type="submit">Registrarse</button>
       </form>
     </div>

@@ -3,8 +3,9 @@ import { getCoches, eliminarCoche } from '../services/cocheService';
 import CocheCard from '../components/CocheCard';
 
 const ListadoCoches = () => {
-  const [coches, setCoches] = useState([]);
+  const [coches, setCoches] = useState([]); // Lista de coches cargados
 
+  // Carga los coches desde la API
   const cargarCoches = async () => {
     try {
       const data = await getCoches();
@@ -14,16 +15,18 @@ const ListadoCoches = () => {
     }
   };
 
+  // Maneja la eliminación de un coche por ID
   const handleEliminar = async (id) => {
     try {
       const token = localStorage.getItem('token');
       await eliminarCoche(id, token);
-      cargarCoches();
+      cargarCoches(); // Recarga la lista después de eliminar
     } catch (err) {
       alert('No se pudo eliminar el coche');
     }
   };
 
+  // Carga inicial de datos al montar el componente
   useEffect(() => {
     cargarCoches();
   }, []);
@@ -33,8 +36,13 @@ const ListadoCoches = () => {
       {coches.length === 0 ? (
         <p>No hay coches disponibles en este momento.</p>
       ) : (
+        // Renderiza una tarjeta por cada coche
         coches.map((coche) => (
-          <CocheCard key={coche._id} coche={coche} onEliminar={handleEliminar} />
+          <CocheCard
+            key={coche._id}
+            coche={coche}
+            onEliminar={handleEliminar}
+          />
         ))
       )}
     </div>

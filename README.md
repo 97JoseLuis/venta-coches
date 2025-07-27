@@ -52,8 +52,6 @@ venta-coches/
 ✅ Footer y política de cookies  
 ✅ Autenticación y control de permisos
 
----
-
 ## 🧪 Instalación local
 
 # Clonar el repositorio
@@ -88,7 +86,6 @@ Frontend: Vercel
 
 Backend: Render
 
-Recuerda configurar las variables de entorno también en ambas plataformas para producción.
 
 📄 Licencia
 MIT License.

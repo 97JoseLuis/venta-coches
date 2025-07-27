@@ -5,15 +5,16 @@ import { AuthContext } from '../context/AuthContext';
 import { Helmet } from 'react-helmet-async';
 
 const Detalles = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // ID del coche desde la URL
   const navigate = useNavigate();
-  const { usuario: user } = useContext(AuthContext);
+  const { usuario: user } = useContext(AuthContext); // Usuario actual desde contexto
 
-  const [coche, setCoche] = useState(null);
-  const [mostrarContacto, setMostrarContacto] = useState(false);
+  const [coche, setCoche] = useState(null); // Datos del coche
+  const [mostrarContacto, setMostrarContacto] = useState(false); // Controla si se muestra info de contacto
 
-  const esAdmin = user?.rol === 'admin';
+  const esAdmin = user?.rol === 'admin'; // Verifica si el usuario es admin
 
+  // Verifica si el usuario es el propietario del coche
   const esPropietario = useMemo(() => {
     if (!user || !coche?.userId) return false;
 
@@ -26,6 +27,7 @@ const Detalles = () => {
     return ownerId === userId;
   }, [user, coche]);
 
+  // Carga los datos del coche al montar el componente o cambiar el ID
   useEffect(() => {
     const obtenerCoche = async () => {
       try {
@@ -42,6 +44,7 @@ const Detalles = () => {
     obtenerCoche();
   }, [id]);
 
+  // Cambia el estado del coche (disponible, reservado, vendido)
   const cambiarEstado = async (nuevoEstado) => {
     if (coche.estado === nuevoEstado) return;
 
@@ -66,6 +69,7 @@ const Detalles = () => {
     }
   };
 
+  // Elimina el coche tras confirmación
   const handleEliminar = async () => {
     const confirmar = window.confirm('¿Estás seguro de que quieres eliminar este anuncio?');
     if (!confirmar) return;
@@ -83,7 +87,7 @@ const Detalles = () => {
     }
   };
 
-  if (!coche) return <p>Cargando...</p>;
+  if (!coche) return <p>Cargando...</p>; // Muestra mensaje mientras se cargan los datos
 
   return (
     <div className="detalles-container">
@@ -103,6 +107,7 @@ const Detalles = () => {
           alt={`${coche.marca} ${coche.modelo}`}
         />
 
+        {/* Etiqueta con el estado del coche si no está disponible */}
         {coche.estado !== 'disponible' && (
           <div className={`estado-etiqueta ${coche.estado}`}>
             {coche.estado}
@@ -110,6 +115,7 @@ const Detalles = () => {
         )}
       </div>
 
+      {/* Info del coche */}
       <p><strong>Precio:</strong> {new Intl.NumberFormat('es-ES', {
         style: 'currency', currency: 'EUR'
       }).format(coche.precio)}</p>
@@ -117,6 +123,7 @@ const Detalles = () => {
       <p><strong>Año:</strong> {coche.anio}</p>
       <p><strong>Descripción:</strong> {coche.descripcion}</p>
 
+      {/* Opciones solo visibles para el propietario o admin */}
       {(esPropietario || esAdmin) && (
         <div className="detalles-acciones">
           {coche.estado !== 'disponible' && (
@@ -133,12 +140,14 @@ const Detalles = () => {
         </div>
       )}
 
+      {/* Mostrar contacto solo si el usuario no es el dueño ni admin */}
       {!esPropietario && !esAdmin && (
         <div className="contacto-anunciante">
           <button onClick={() => setMostrarContacto(!mostrarContacto)}>
             Contactar con el anunciante
           </button>
 
+          {/* Info de contacto si está habilitado y el usuario del coche es un objeto */}
           {mostrarContacto && coche.userId && typeof coche.userId === 'object' && (
             <div className="info-contacto">
               <p><strong>Nombre:</strong> {coche.userId.nombre}</p>

@@ -4,9 +4,10 @@ import { Helmet } from 'react-helmet-async';
 import { getCocheById, actualizarEstadoCoche } from '../services/cocheService';
 
 const EditarCoche = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // ID del coche obtenido de la URL
   const navigate = useNavigate();
 
+  // Estado del formulario
   const [formulario, setFormulario] = useState({
     marca: '',
     modelo: '',
@@ -19,6 +20,7 @@ const EditarCoche = () => {
   const [errores, setErrores] = useState({});
   const [loading, setLoading] = useState(true);
 
+  // Obtener el usuario desde localStorage
   const usuario = (() => {
     try {
       return JSON.parse(localStorage.getItem('usuario'));
@@ -29,10 +31,13 @@ const EditarCoche = () => {
 
   const token = localStorage.getItem('token');
 
+  // Cargar datos del coche al montar el componente
   useEffect(() => {
     const cargarCoche = async () => {
       try {
         const data = await getCocheById(id);
+
+        // Verificación de permisos: solo el dueño o un admin puede editar
         const userId = String(usuario?._id || usuario?.id);
         const ownerId = typeof data.userId === 'object'
           ? String(data.userId._id || data.userId.id)
@@ -43,6 +48,7 @@ const EditarCoche = () => {
           return navigate('/');
         }
 
+        // Rellenar el formulario con los datos del coche
         setFormulario({
           marca: data.marca ?? '',
           modelo: data.modelo ?? '',
@@ -62,6 +68,7 @@ const EditarCoche = () => {
     cargarCoche();
   }, [id]);
 
+  // Validaciones del formulario
   const validar = () => {
     const erroresTemp = {};
     const anioActual = new Date().getFullYear();
@@ -76,6 +83,7 @@ const EditarCoche = () => {
     }
     if (!formulario.descripcion.trim()) erroresTemp.descripcion = 'La descripción es obligatoria';
 
+    // Validación de imagen (si se proporciona)
     if (formulario.imagen) {
       const tipo = formulario.imagen.type;
       if (!['image/jpeg', 'image/png'].includes(tipo)) {
@@ -90,8 +98,9 @@ const EditarCoche = () => {
     return Object.keys(erroresTemp).length === 0;
   };
 
+  // Manejar cambios en el formulario
   const handleChange = (e) => {
-    const { name, value, files, type } = e.target;
+    const { name, value, files } = e.target;
     if (name === 'imagen') {
       setFormulario({ ...formulario, imagen: files[0] });
     } else {
@@ -99,6 +108,7 @@ const EditarCoche = () => {
     }
   };
 
+  // Enviar formulario al servidor
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validar()) {
@@ -135,37 +145,44 @@ const EditarCoche = () => {
       </Helmet>
 
       <h2>Editar coche</h2>
+
       <form onSubmit={handleSubmit} encType="multipart/form-data">
+        {/* Campo marca */}
         <label>
           Marca:
           <input type="text" name="marca" value={formulario.marca} onChange={handleChange} />
           {errores.marca && <span className="error">{errores.marca}</span>}
         </label>
 
+        {/* Campo modelo */}
         <label>
           Modelo:
           <input type="text" name="modelo" value={formulario.modelo} onChange={handleChange} />
           {errores.modelo && <span className="error">{errores.modelo}</span>}
         </label>
 
+        {/* Campo año */}
         <label>
           Año:
           <input type="number" name="anio" value={formulario.anio} onChange={handleChange} />
           {errores.anio && <span className="error">{errores.anio}</span>}
         </label>
 
+        {/* Campo precio */}
         <label>
           Precio (€):
           <input type="number" name="precio" value={formulario.precio} onChange={handleChange} />
           {errores.precio && <span className="error">{errores.precio}</span>}
         </label>
 
+        {/* Campo descripción */}
         <label>
           Descripción:
           <textarea name="descripcion" value={formulario.descripcion} onChange={handleChange} />
           {errores.descripcion && <span className="error">{errores.descripcion}</span>}
         </label>
 
+        {/* Campo imagen */}
         <label>
           Nueva imagen (opcional):
           <input type="file" name="imagen" accept="image/*" onChange={handleChange} />

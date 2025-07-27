@@ -32,7 +32,7 @@ const cocheSchema = new mongoose.Schema({
     default: 'disponible',
   },
   imagen: {
-    type: String, // 👉 Aquí se guarda la URL de Cloudinary
+    type: String, // Aquí se guarda la URL de Cloudinary
     default: '',
   },
   userId: {
